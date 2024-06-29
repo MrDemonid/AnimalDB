@@ -9,7 +9,7 @@ public abstract class AnimalPack extends Animal {
 
     public AnimalPack(int id, String nickName, Date birthDay, String comments, AnimalCommands commands)
     {
-        super(id, nickName, birthDay, comments, commands, "Pack");
+        super(id, nickName, birthDay, comments, commands, AnimalClass.Packs);
     }
 }
 

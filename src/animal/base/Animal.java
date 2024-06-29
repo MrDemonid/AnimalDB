@@ -11,9 +11,9 @@ public abstract class Animal {
     private String comments;
     private AnimalCommands commands;
 
-    private String animalClass;
+    private AnimalClass animalClass;
 
-    public Animal(int id, String nickName, Date birthDay, String comments, AnimalCommands commands, String animalClass)
+    public Animal(int id, String nickName, Date birthDay, String comments, AnimalCommands commands, AnimalClass animalClass)
     {
         this.id = id;
         this.nickName = nickName;
