@@ -138,42 +138,30 @@ public class AnimalDB implements IDbCloseable {
 
     public void addAnimal(Animal animal)
     {
-
-        int last_id = 0;
-        try (PreparedStatement st_data = con.prepareStatement("INSERT INTO anm_data (nick, birth_day, comments) VALUES (?, ?, ?);",
-                    Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement st_index = con.prepareStatement("INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);",
-                    Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement st_cmd = con.prepareStatement("INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;");
-        )
+        try (PreparedStatement st_data = con.prepareStatement("INSERT INTO anm_data (nick, birth_day, comments) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st_index = con.prepareStatement("INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);", Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st_cmd = con.prepareStatement("INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;");)
         {
-            System.out.println("do insert...");
             con.setAutoCommit(false);
             // добавляем в таблицу anm_data
             st_data.setString(1, animal.getNickName());
             st_data.setDate(2, new java.sql.Date(animal.getBirthDay().getTime()));
             st_data.setString(3, "");
-            last_id = run_statement(st_data);
-            System.out.println("  - id = " + last_id);
-            // добавляем в таблицу animals
-            if (last_id > 0)
-            {
-                st_index.setString(1, animal.getClass().getSimpleName());
-                st_index.setInt(2, last_id);
-                last_id = run_statement(st_index);
-                System.out.println("  - id = " + last_id);
+            int last_id = runStatementWIthKey(st_data);
 
-                // добавляем команды
-                AnimalCommands cmd = animal.getCommands();
-                for (String s : cmd)
-                {
-                    System.out.println("    - add command '" + s + "'");
-                    st_cmd.setInt(1, last_id);
-                    st_cmd.setString(2, s);
-                    st_cmd.executeUpdate();
-                }
+            // добавляем в таблицу animals
+            st_index.setString(1, animal.getClass().getSimpleName());
+            st_index.setInt(2, last_id);
+            last_id = runStatementWIthKey(st_index);
+
+            // добавляем команды
+            AnimalCommands cmd = animal.getCommands();
+            for (String s : cmd)
+            {
+                st_cmd.setInt(1, last_id);
+                st_cmd.setString(2, s);
+                st_cmd.executeUpdate();
             }
-            System.out.println("commit...");
             con.commit();
 
         } catch (SQLException e) {
@@ -183,11 +171,21 @@ public class AnimalDB implements IDbCloseable {
             } catch (SQLException ignored) {
             }
         } finally {
-            System.out.println("finally");
             try {
                 con.setAutoCommit(true);
             } catch (SQLException ignored) {
             }
+        }
+    }
+
+    private int runStatementWIthKey(PreparedStatement stmt) throws SQLException
+    {
+        try (ResultSet rs = stmt.getGeneratedKeys();)
+        {
+            stmt.executeUpdate();
+            if (!rs.next())
+                throw new SQLException("Not found id.");
+            return rs.getInt(1);
         }
     }
 
