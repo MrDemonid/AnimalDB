@@ -1,3 +1,6 @@
+-- CREATE DATABASE anim_db;
+-- USE anim_db;
+
 CREATE TABLE cmd_info (
 id INT AUTO_INCREMENT,
 denotation VARCHAR(32),

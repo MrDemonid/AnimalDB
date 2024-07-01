@@ -84,8 +84,9 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
      * Добавление нового животного
      */
     @Override
-    public void addAnimal(Animal animal) {
-
+    public void addAnimal(Animal animal)
+    {
+        db.addAnimal(animal);
     }
 
     @Override

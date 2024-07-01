@@ -1,3 +1,6 @@
+import animal.Dog;
+import animal.Hamster;
+import animal.base.Animal;
 import model.Model;
 
 import java.util.Calendar;
@@ -18,5 +21,14 @@ public class Main {
         model.showType("Horse");
         model.showId(2);
         model.showId(4);
+
+//        Animal d = new Hamster(0, "Beda", new Date(2021-1900, Calendar.JANUARY, 18));
+//        d.addCommand("Fetch");
+//        d.addCommand("Sit");
+//        d.addCommand("Kick");
+//        d.addCommand("Run");
+//        model.addAnimal(d);
+//        model.showAnimals();
+
     }
 }

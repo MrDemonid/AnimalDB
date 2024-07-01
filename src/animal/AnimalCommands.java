@@ -1,20 +1,22 @@
 package animal;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
-public class AnimalCommands {
+public class AnimalCommands implements Iterable<String> {
 
-    private HashSet<String> commands;
+    private ArrayList<String> commands;
 
     public AnimalCommands()
     {
-        commands = new HashSet<>();
+        commands = new ArrayList<>();
     }
 
     public void addCommand(String cmd)
     {
-        commands.add(cmd);
+        if (!commands.contains(cmd))
+            commands.add(cmd);
     }
 
     public boolean check(String cmd)
@@ -33,5 +35,36 @@ public class AnimalCommands {
             res.append(command);
         }
         return res.toString();
+    }
+
+    /*
+        Итератор для for-each
+     */
+
+    @Override
+    public Iterator<String> iterator()
+    {
+        return new ImplCommands();
+    }
+
+    private class ImplCommands implements Iterator<String> {
+
+        int index = 0;
+
+        @Override
+        public boolean hasNext()
+        {
+            return index < commands.size();
+        }
+
+        @Override
+        public String next()
+        {
+            if (hasNext())
+            {
+                return commands.get(index++);
+            }
+            return null;
+        }
     }
 }

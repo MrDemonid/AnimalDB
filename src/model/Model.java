@@ -33,6 +33,9 @@ public class Model {
             return;
         }
         System.out.println("Animals: " + cmd);
+        for (Animal animal : cmd) {
+            System.out.println(animal);
+        }
     }
 
     public void showCommands()
@@ -76,6 +79,18 @@ public class Model {
             System.out.println("Animals: " + res);
         }
     }
+
+    public void addAnimal(Animal animal)
+    {
+        db.addAnimal(animal);
+    }
+
+
+
+
+
+
+
 
     private boolean connect()
     {

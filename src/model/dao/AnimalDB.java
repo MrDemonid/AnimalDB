@@ -3,10 +3,7 @@ package model.dao;
 import animal.*;
 import animal.base.Animal;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -134,9 +131,87 @@ public class AnimalDB implements IDbCloseable {
     }
 
 
-    public void addAnimal(Animal animal) {
+    public void updateAnimal(Animal animal)
+    {
 
     }
+
+    public void addAnimal(Animal animal)
+    {
+
+        int last_id = 0;
+        try (PreparedStatement st_data = con.prepareStatement("INSERT INTO anm_data (nick, birth_day, comments) VALUES (?, ?, ?);",
+                    Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st_index = con.prepareStatement("INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);",
+                    Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st_cmd = con.prepareStatement("INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;");
+        )
+        {
+            System.out.println("do insert...");
+            con.setAutoCommit(false);
+            // добавляем в таблицу anm_data
+            st_data.setString(1, animal.getNickName());
+            st_data.setDate(2, new java.sql.Date(animal.getBirthDay().getTime()));
+            st_data.setString(3, "");
+            last_id = run_statement(st_data);
+            System.out.println("  - id = " + last_id);
+            // добавляем в таблицу animals
+            if (last_id > 0)
+            {
+                st_index.setString(1, animal.getClass().getSimpleName());
+                st_index.setInt(2, last_id);
+                last_id = run_statement(st_index);
+                System.out.println("  - id = " + last_id);
+
+                // добавляем команды
+                AnimalCommands cmd = animal.getCommands();
+                for (String s : cmd)
+                {
+                    System.out.println("    - add command '" + s + "'");
+                    st_cmd.setInt(1, last_id);
+                    st_cmd.setString(2, s);
+                    st_cmd.executeUpdate();
+                }
+            }
+            System.out.println("commit...");
+            con.commit();
+
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            try {
+                con.rollback();
+            } catch (SQLException ignored) {
+            }
+        } finally {
+            System.out.println("finally");
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
+    private int run_statement(PreparedStatement stmt)
+    {
+        int last_id = 0;
+        ResultSet rs = null;
+        try {
+            stmt.executeUpdate();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next())
+                last_id = rs.getInt(1);
+        } catch (SQLException e) {
+        }
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+            }
+        }
+        return last_id;
+    }
+
+
 
     @Override
     public void close()
