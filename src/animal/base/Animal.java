@@ -23,8 +23,44 @@ public abstract class Animal {
         this.animalClass = animalClass;
     }
 
+
+
+    public int getId() {
+        return id;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public AnimalCommands getCommands() {
+        return commands;
+    }
+
+    public AnimalClass getAnimalClass() {
+        return animalClass;
+    }
+
+    /**
+     * Добавление новой команды животному
+     * @param command команда
+     */
     public void addCommand(String command)
     {
         commands.addCommand(command);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%d] (%s: '%s') '%s', %te-%tm-%tY, '%s'",
+                            id, animalClass.toString(), getClass().getSimpleName(), nickName, birthDay, birthDay, birthDay, commands);
     }
 }

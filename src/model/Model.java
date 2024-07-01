@@ -1,11 +1,13 @@
 package model;
 
-import model.dao.AnimalDAO;
+import animal.base.Animal;
+import model.dao.DatabaseModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Model {
 
@@ -14,16 +16,23 @@ public class Model {
     private static final String password = "qqqqqqqq";
 
     private static Connection con;
-    private AnimalDAO db;
+    private DatabaseModel db;
+
 
     public Model()
     {
         connect();
-        if (con != null)
-        {
-            db = new AnimalDAO(con);
-        }
+    }
 
+    public void showAnimals()
+    {
+        ArrayList<Animal> cmd = db.getAll();
+        if (cmd == null)
+        {
+            System.out.println("error: database is problem");
+            return;
+        }
+        System.out.println("Animals: " + cmd);
     }
 
     public void showCommands()
@@ -37,23 +46,45 @@ public class Model {
         System.out.println("commands: " + cmd);
     }
 
-    public void showById(int id)
+    public void showType(String type)
     {
-        ArrayList<String> cmd = db.getCommandsById(id);
+        ArrayList<Animal> cmd = db.getByType(type);
         if (cmd == null)
         {
             System.out.println("error: database is problem");
             return;
         }
-        System.out.println("commands: " + cmd);
+        System.out.println("Type: " + cmd);
     }
 
-    private void connect()
+    public void showId(int id)
+    {
+        ArrayList<Animal> cmd = db.getById(id);
+        if (cmd == null)
+        {
+            System.out.println("error: database is problem");
+            return;
+        }
+        System.out.println("Id: " + cmd);
+    }
+
+    public void showBithdays(Date from, Date to)
+    {
+        ArrayList<Animal> res = db.getByBirthdays(from, to);
+        if (res != null)
+        {
+            System.out.println("Animals: " + res);
+        }
+    }
+
+    private boolean connect()
     {
         try {
             con = DriverManager.getConnection(url, user, password);
+            db = new DatabaseModel(con);
+            return true;
         } catch (SQLException e) {
         }
-
+        return false;
     }
 }

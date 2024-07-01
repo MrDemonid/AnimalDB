@@ -11,6 +11,8 @@ public class Cat extends AnimalPets {
         super(id, nickName, birthDay, comments, commands);
     }
 
-
-
+    public Cat(int id, String nickName, Date birthDay)
+    {
+        super(id, nickName, birthDay);
+    }
 }

@@ -10,4 +10,9 @@ public class Dog extends AnimalPets {
     {
         super(id, nickName, birthDay, comments, commands);
     }
+
+    public Dog(int id, String nickName, Date birthDay)
+    {
+        super(id, nickName, birthDay);
+    }
 }

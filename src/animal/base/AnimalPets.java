@@ -11,4 +11,9 @@ public abstract class AnimalPets extends Animal {
     {
         super(id, nickName, birthDay, comments, commands, AnimalClass.Pets);
     }
+
+    public AnimalPets(int id, String nickName, Date birthDay)
+    {
+        super(id, nickName, birthDay, "", new AnimalCommands(), AnimalClass.Pets);
+    }
 }

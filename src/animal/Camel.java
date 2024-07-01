@@ -10,4 +10,9 @@ public class Camel extends AnimalPack {
     {
         super(id, nickName, birthDay, comments, commands);
     }
+
+    public Camel(int id, String nickName, Date birthDay)
+    {
+        super(id, nickName, birthDay);
+    }
 }

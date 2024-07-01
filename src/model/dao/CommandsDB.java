@@ -14,7 +14,7 @@ import java.util.ArrayList;
 Вызов rollback() будет приводить к откату всего пакета SQL операторов.
  */
 
-public class CommandsDAO {
+public class CommandsDB implements IDbCloseable {
 
     static final String sqlGetAll = "SELECT id, denotation FROM cmd_info;";
     static final String sqlGetById = "SELECT denotation FROM cmd_info JOIN cmd_list ON cmd_list.cmd_id = cmd_info.id JOIN animals ON animals.id = cmd_list.anm_id WHERE animals.id = ?;";
@@ -23,10 +23,18 @@ public class CommandsDAO {
     PreparedStatement stAll;
     PreparedStatement stById;
 
-    public CommandsDAO(Connection con)
+    public CommandsDB(Connection con)
     {
         this.con = con;
         prepareStatements();
+    }
+
+    private ArrayList<String> makeResult(ResultSet rs) throws SQLException {
+        ArrayList<String> res = new ArrayList<>();
+        while (rs.next()) {
+            res.add(rs.getString("denotation"));
+        }
+        return res;
     }
 
     /**
@@ -34,17 +42,13 @@ public class CommandsDAO {
      */
     public ArrayList<String> getCommandsList()
     {
-        ArrayList<String> res = new ArrayList<>();
         try {
             ResultSet rs = stAll.executeQuery();
-            while (rs.next()) {
-                res.add(rs.getString("denotation"));
-            }
-        } catch (NullPointerException | SQLException e) {
-            System.out.println("cmd error: " + e.getMessage());
+            return makeResult(rs);
+        }  catch (NullPointerException | SQLException e) {
+            System.out.println(getClass().getSimpleName() + " error: " + e.getMessage());
             return null;
         }
-        return res;
     }
 
     /**
@@ -53,20 +57,16 @@ public class CommandsDAO {
      */
     public ArrayList<String> getCommandsById(int id)
     {
-        ArrayList<String> res = new ArrayList<>();
         try {
             stById.setInt(1, id);
             ResultSet rs = stById.executeQuery();
-            while (rs.next())
-            {
-                res.add(rs.getString("denotation"));
-            }
+            return makeResult(rs);
         } catch (NullPointerException | SQLException e) {
             return null;
         }
-        return res;
     }
 
+    @Override
     public void close()
     {
         stAll = closeStatement(stAll);
