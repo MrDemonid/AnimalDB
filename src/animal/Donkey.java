@@ -15,4 +15,10 @@ public class Donkey extends AnimalPack {
     {
         super(id, nickName, birthDay);
     }
+
+    public Donkey(String nickName, Date birthDay)
+    {
+        super(0, nickName, birthDay);
+    }
+
 }

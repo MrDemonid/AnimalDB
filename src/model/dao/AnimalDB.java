@@ -9,6 +9,13 @@ import java.util.Date;
 
 public class AnimalDB implements IDbCloseable {
 
+    static final String sqlUpdate =     "UPDATE anm_data SET nick=?, birth_day=?, comments=? WHERE id=(SELECT data_id FROM animals WHERE id=?);";
+    static final String sqlDelete =     "DELETE FROM cmd_list WHERE anm_id=?;";
+    static final String sqlInsData =    "INSERT INTO anm_data (nick, birth_day, comments) VALUES (?, ?, ?);";
+    static final String sqlInsAnim =    "INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);";
+    static final String sqlInsCmd =     "INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;";
+
+
     static final String sqlGetAll =     "SELECT animals.id, anm_data.nick, anm_data.birth_day, anm_type.denotation FROM anm_data " +
                                         "JOIN animals ON animals.data_id = anm_data.id " +
                                         "JOIN anm_type ON animals.type_id = anm_type.id;";
@@ -131,40 +138,31 @@ public class AnimalDB implements IDbCloseable {
     }
 
 
+    /**
+     * Обновляет данные в БД
+     * @param animal объект с новыми данными
+     */
     public void updateAnimal(Animal animal)
     {
-
-    }
-
-    public void addAnimal(Animal animal)
-    {
-        try (PreparedStatement st_data = con.prepareStatement("INSERT INTO anm_data (nick, birth_day, comments) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement st_index = con.prepareStatement("INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);", Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement st_cmd = con.prepareStatement("INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;");)
+        try (PreparedStatement st_data = con.prepareStatement(sqlUpdate);
+             PreparedStatement st_del = con.prepareStatement(sqlDelete);)
         {
             con.setAutoCommit(false);
-            // добавляем в таблицу anm_data
+            // обновляем таблицу anm_data
             st_data.setString(1, animal.getNickName());
             st_data.setDate(2, new java.sql.Date(animal.getBirthDay().getTime()));
-            st_data.setString(3, "");
-            int last_id = runStatementWIthKey(st_data);
+            st_data.setString(3, animal.getComments());
+            st_data.setInt(4, animal.getId());
+            st_data.executeUpdate();
 
-            // добавляем в таблицу animals
-            st_index.setString(1, animal.getClass().getSimpleName());
-            st_index.setInt(2, last_id);
-            last_id = runStatementWIthKey(st_index);
-
+            // удаляем старые данные из cmd_list
+            st_del.setInt(1, animal.getId());
+            st_del.executeUpdate();
             // добавляем команды
-            AnimalCommands cmd = animal.getCommands();
-            for (String s : cmd)
-            {
-                st_cmd.setInt(1, last_id);
-                st_cmd.setString(2, s);
-                st_cmd.executeUpdate();
-            }
+            setCommands(animal);
             con.commit();
-
-        } catch (SQLException e) {
+        } catch (NullPointerException |SQLException e)
+        {
             System.out.println("Error: " + e.getMessage());
             try {
                 con.rollback();
@@ -178,35 +176,77 @@ public class AnimalDB implements IDbCloseable {
         }
     }
 
+    /**
+     * Добавлет в БД новое животное
+     * @param animal Объетк для добавления, которому присваивается новый ID.
+     */
+    public void addAnimal(Animal animal)
+    {
+        try (PreparedStatement st_data = con.prepareStatement(sqlInsData, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st_index = con.prepareStatement(sqlInsAnim, Statement.RETURN_GENERATED_KEYS);)
+        {
+            con.setAutoCommit(false);
+            // добавляем в таблицу anm_data
+            st_data.setString(1, animal.getNickName());
+            st_data.setDate(2, new java.sql.Date(animal.getBirthDay().getTime()));
+            st_data.setString(3, animal.getComments());
+            int last_id = runStatementWIthKey(st_data);
+            // добавляем в таблицу animals
+            st_index.setString(1, animal.getClass().getSimpleName());
+            st_index.setInt(2, last_id);
+            last_id = runStatementWIthKey(st_index);
+
+            // добавляем команды
+            animal.setId(last_id);
+            setCommands(animal);
+
+            con.commit();
+
+        } catch (NullPointerException | SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            try {
+                con.rollback();
+            } catch (SQLException ignored) {
+            }
+        } finally {
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Добавляет в БД список команд животного
+     * @param animal живность
+     */
+    private void setCommands(Animal animal) throws SQLException
+    {
+        try (PreparedStatement st_cmd = con.prepareStatement(sqlInsCmd);)
+        {
+            for (String s : animal.getCommands())
+            {
+                st_cmd.setInt(1, animal.getId());
+                st_cmd.setString(2, s);
+                st_cmd.executeUpdate();
+            }
+        } catch (NullPointerException | SQLException e) {
+            throw new SQLException("Can't add commands to 'cmd_list' table!");
+        }
+    }
+
+    /**
+     * Выполнение запроса, с возвратом сгенерированного ключа (для автоинкремента)
+     */
     private int runStatementWIthKey(PreparedStatement stmt) throws SQLException
     {
+        stmt.executeUpdate();
         try (ResultSet rs = stmt.getGeneratedKeys();)
         {
-            stmt.executeUpdate();
             if (!rs.next())
                 throw new SQLException("Not found id.");
             return rs.getInt(1);
         }
-    }
-
-    private int run_statement(PreparedStatement stmt)
-    {
-        int last_id = 0;
-        ResultSet rs = null;
-        try {
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            if (rs.next())
-                last_id = rs.getInt(1);
-        } catch (SQLException e) {
-        }
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-            }
-        }
-        return last_id;
     }
 
 

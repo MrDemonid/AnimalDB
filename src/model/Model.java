@@ -85,6 +85,11 @@ public class Model {
         db.addAnimal(animal);
     }
 
+    public void updateAnimal(Animal animal)
+    {
+        db.updateAnimal(animal);
+    }
+
 
 
 

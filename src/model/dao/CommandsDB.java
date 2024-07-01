@@ -6,14 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/*
-Перед созданием пакета, следует отключить автоматическое завершение транзакции
-после выполнения каждого запроса setAutoCommit(false).
-Это приведёт к тому, что завершение или откат транзакции придётся выполнять явно
-вызывая методы commit() или rollback().
-Вызов rollback() будет приводить к откату всего пакета SQL операторов.
- */
-
 public class CommandsDB implements IDbCloseable {
 
     static final String sqlGetAll = "SELECT id, denotation FROM cmd_info;";
@@ -94,69 +86,3 @@ public class CommandsDB implements IDbCloseable {
     }
 
 }
-
-/*
-connection.setAutoCommit(false);
-try (Statement stmt = connection.createStatement()) { //(1)
-    for (int i = 1; i <= SIZE; i++) {
-        stmt.addBatch("INSERT INTO book (title) VALUES ('" + "JDBC Insert Example: " + i + "')"); //(2)
-        if (i % BATCH_SIZE == 0 || i == SIZE) {
-            try {
-                int[] result = stmt.executeBatch(); //(3)
-                connection.commit();
-            } catch (BatchUpdateException ex) {
-                Log(ex);
-                connection.rollback();
-            }
-        }
-    }
-}
-Шаги:
-
-Cоздаём объект Statement;
-Cобираем пакет запросов с помощью метода void addBatch(String SQL);
-Посылаем пакет серверу БД вызвав метод executeBatch().
-Метод executeBatch() возвращает массив обработанных строк.
-
-Преимущество
-Использование объекта Statement даёт возможность собирать в один пакет разные
-SQL операторы INSERT, UPDATE, DELETE.
-
-Недостаток
-Каждый SQL запрос проверяется и компилируется БД, что приводит к увеличению времени выполнения.
- */
-
-/*
-connection.setAutoCommit(false);
-try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO book (title) VALUES (?)")) { //(1)
-    for (int i = 1; i <= SIZE; i++) {
-        pstmt.setString(1, "JDBC Insert Example: " + i); //(2)
-        pstmt.addBatch(); //(3)
-        if (i % BATCH_SIZE == 0 || i == SIZE) {
-            try {
-                int[] result = pstmt.executeBatch(); //(4)
-                connection.commit();
-            } catch (BatchUpdateException ex) {
-                Log(ex);
-                connection.rollback();
-            }
-        }
-    }
-}
-
-Cоздаём объект PreparedStatement передав в качестве параметра SQL запрос;
-Устанавливаем все параметры, указанные в запросе;
-Собираем пакет запросов с помощью метода void addBatch();
-Посылаем пакет серверу БД вызвав метод executeBatch().
-
-Шаги 3) и 4) такие же, как и для Statement, единственное отличие — это addBatch() без параметров.
-
-Преимущество
-SQL запрос компилируется и оптимизируется базой данных один раз, после чего его можно использовать
-многократно, задавая различные значения параметров. И это серьёзное преимущество, так как не затрачивается
-время на компиляцию каждого последующего запроса.
-
-Недостаток
-Использование интерфейса PreparedStatement не предусматривает возможности собирать в один пакет разные
-SQL операторы (INSERT, UPDATE, DELETE) подобно как для Statement, а только какой-то один.
-*/

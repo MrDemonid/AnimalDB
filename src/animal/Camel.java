@@ -15,4 +15,10 @@ public class Camel extends AnimalPack {
     {
         super(id, nickName, birthDay);
     }
+
+    public Camel(String nickName, Date birthDay)
+    {
+        super(0, nickName, birthDay);
+    }
+
 }

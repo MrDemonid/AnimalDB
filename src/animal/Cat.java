@@ -15,4 +15,8 @@ public class Cat extends AnimalPets {
     {
         super(id, nickName, birthDay);
     }
+    public Cat(String nickName, Date birthDay)
+    {
+        super(0, nickName, birthDay);
+    }
 }

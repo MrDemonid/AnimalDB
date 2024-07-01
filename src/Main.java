@@ -22,13 +22,13 @@ public class Main {
         model.showId(2);
         model.showId(4);
 
-//        Animal d = new Hamster(0, "Beda", new Date(2021-1900, Calendar.JANUARY, 18));
-//        d.addCommand("Fetch");
-//        d.addCommand("Sit");
-//        d.addCommand("Kick");
-//        d.addCommand("Run");
-//        model.addAnimal(d);
-//        model.showAnimals();
+        Animal d = new Hamster(17, "Baulty", new Date(2019-1900, Calendar.JANUARY, 18));
+        d.addCommand("Sit");
+        d.addCommand("Jump");
+        d.addCommand("Kick");
+        d.addCommand("Run");
+        model.updateAnimal(d);
+        model.showAnimals();
 
     }
 }

@@ -77,7 +77,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
      */
     @Override
     public void updateAnimal(Animal animal) {
-
+        db.updateAnimal(animal);
     }
 
     /**

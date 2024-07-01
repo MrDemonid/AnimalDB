@@ -15,4 +15,9 @@ public class Hamster extends AnimalPets {
     {
         super(id, nickName, birthDay);
     }
+
+    public Hamster(String nickName, Date birthDay)
+    {
+        super(0, nickName, birthDay);
+    }
 }
