@@ -1,4 +1,4 @@
--- DROP PROCEDURE  addrec;
+DROP PROCEDURE  IF exists addrec;
 
 DELIMITER //
 CREATE PROCEDURE  addrec (nick TEXT, bd DATE, typ TEXT, n1 TEXT, n2 TEXT, n3 TEXT, n4 TEXT)
@@ -14,18 +14,10 @@ BEGIN
 	INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = typ), ndata_id);
 	SET nanimal_id = LAST_INSERT_ID();
 
-	IF n1 != NULL THEN
-		INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n1;
-	END IF;
-    IF n2 != NULL THEN
-		INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n2;
-	END IF;
-    IF n3 != NULL THEN
-		INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n3;
-	END IF;
-	IF n4 != NULL THEN
-		INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n4;
-	END IF;
+	INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n1;
+	INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n2;
+	INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n3;
+	INSERT INTO cmd_list (anm_id, cmd_id) SELECT nanimal_id, id FROM cmd_info WHERE denotation = n4;
 	
     COMMIT;
 	-- ROLLBACK;

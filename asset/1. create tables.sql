@@ -1,13 +1,13 @@
--- CREATE DATABASE anim_db;
--- USE anim_db;
+CREATE DATABASE IF NOT EXISTS anim_db;
+USE anim_db;
 
-CREATE TABLE cmd_info (
+CREATE TABLE IF NOT EXISTS cmd_info (
 id INT AUTO_INCREMENT,
 denotation VARCHAR(32),
 PRIMARY KEY (id)
 );
 
-CREATE TABLE anm_data (
+CREATE TABLE IF NOT EXISTS anm_data (
 id INT AUTO_INCREMENT,
 nick VARCHAR(32),
 birth_day DATE,
@@ -15,13 +15,13 @@ comments VARCHAR(255),
 PRIMARY KEY(id)
 );
 
-CREATE TABLE anm_type (
+CREATE TABLE IF NOT EXISTS anm_type (
 id INT AUTO_INCREMENT,
 denotation VARCHAR(32),
 PRIMARY KEY (id)
 );
 
-CREATE TABLE animals (
+CREATE TABLE IF NOT EXISTS animals (
 id INT AUTO_INCREMENT,
 type_id INT,
 data_id INT,
@@ -30,7 +30,7 @@ FOREIGN KEY (data_id) REFERENCES anm_data(id) ON DELETE CASCADE,
 PRIMARY KEY (id) 
 );
 
-CREATE TABLE cmd_list (
+CREATE TABLE IF NOT EXISTS cmd_list (
 id INT AUTO_INCREMENT,
 anm_id INT NOT NULL,
 cmd_id INT NOT NULL,

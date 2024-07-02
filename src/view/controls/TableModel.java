@@ -1,4 +1,4 @@
-package view;
+package view.controls;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -18,11 +18,47 @@ public class TableModel extends AbstractTableModel {
         data = new ArrayList<>();
     }
 
+    /**
+     * Определяет типы данных для каждого столбца
+     * @param classes список типов
+     */
+    public void setColumnsClass(Class ... classes)
+    {
+        columnsClass.clear();
+        columnsClass.addAll(Arrays.asList(classes));
+        fireTableStructureChanged();
+    }
 
+    /**
+     * Определяет имена для столбцов
+     * @param names список имён
+     */
     public void setColumnsName(String ... names)
     {
         columnsName.clear();
         columnsName.addAll(Arrays.asList(names));
+    }
+
+
+    /**
+     * Добавление строки в таблицу
+     * @param row строка с данными
+     */
+    public void addRowData(ArrayList<Object> row)
+    {
+        data.add(row);
+        fireTableRowsInserted(data.size()-1, data.size()-1);
+    }
+
+    /**
+     * Задаёт новые данные для таблицы (старые удаляются)
+     * @param source массов строк с массивом данных для каждого столбца
+     */
+    public void addSource(ArrayList<ArrayList<Object>> source)
+    {
+        data.clear();
+        data.addAll(source);
+        fireTableStructureChanged();
     }
 
     /*
@@ -92,6 +128,9 @@ public class TableModel extends AbstractTableModel {
         return columnsName.size();
     }
 
+    /*
+        Возвращает значение в определенном столбце
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
