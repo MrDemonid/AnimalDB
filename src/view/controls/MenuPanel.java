@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import static java.lang.System.exit;
-import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 public class MenuPanel extends JPanel {
 
@@ -41,12 +40,16 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            JButton btn = (JButton) e.getSource();
-            ModifyDialog dlg = new ModifyDialog(null,commands);
-            dlg.pack();
-            dlg.setVisible(true);
-
-            System.out.println("Добавить");
+            if (JOptionPane.showConfirmDialog(null,
+                    new InputDialog(commands),
+                    "Добавление животного",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+            {
+                System.out.println("YES");
+            } else {
+                System.out.println("Cansel");
+            }
         }
     };
 
@@ -54,12 +57,17 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            JOptionPane.showInputDialog(getParent(), "Select",
-                    "Title",
-                    PLAIN_MESSAGE,
-                    null,
-                    null,
-                    null);
+            if (JOptionPane.showConfirmDialog(null,
+                    new InputDialog(commands),
+                    "Изменить данные",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+            {
+                System.out.println("YES");
+            } else {
+                System.out.println("Cansel");
+            }
+
 
         }
     };
