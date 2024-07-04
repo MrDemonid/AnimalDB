@@ -29,16 +29,12 @@ public class InfoLayout implements LayoutManager {
         int width = getMaxWidth(parent);
 
         int y = gap;
-        for (int i = 0; i < components.length-1; i++)
+        for (Component comp : components)
         {
-            Component comp = components[i];
             Dimension size = comp.getPreferredSize();
             comp.setBounds(gap,y, width,size.height); // задаём абсолютные координаты и размер компоненту
             y += size.height + gap;
         }
-//        // последний компонент расширяем до низу
-//        int height = st.height - y-gap;
-//        components[components.length-1].setBounds(gap,y,width, height);
     }
 
     @Override

@@ -9,7 +9,11 @@ public class Main {
     public static void main(String[] args) {
 
         Model model = new Model();
-        View view = new GraphView();
+        ArrayList<String> cmd = model.getCommandsList();
+
+        View view = new GraphView(cmd, new ArrayList<String>());
+
+
 
         ArrayList<Animal> res = model.getAllAnimals();
         view.showTable(res);

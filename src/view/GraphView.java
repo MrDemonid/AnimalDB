@@ -1,7 +1,7 @@
 package view;
 
 import animal.base.Animal;
-import view.controls.InfoLayout;
+import view.controls.MenuPanel;
 import view.controls.TableModel;
 
 import javax.swing.*;
@@ -12,13 +12,17 @@ import java.util.Date;
 public class GraphView extends View {
 
     private JFrame window;
-    private JPanel panBtn;
+    private MenuPanel menuPanel;
     private JScrollPane scrollPane;
     private TableModel tbModel;
 
+    private ArrayList<String> commands;     // список команд
+    private ArrayList<String> types;        // список видов животных
 
-    public GraphView()
+    public GraphView(ArrayList<String> commands, ArrayList<String> types)
     {
+        this.commands = commands;
+        this.types = types;
         init();
     }
 
@@ -28,19 +32,13 @@ public class GraphView extends View {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(800, 600);
         // создаём панели
-
-        panBtn = new JPanel();
-        panBtn.setLayout(new InfoLayout(4));
-        panBtn.add(new JButton("Добавить"));
-        panBtn.add(new JButton("Посмотреть"));
-        panBtn.add(new JButton("Поиск"));
-        panBtn.add(new JButton("Выход"));
+        menuPanel = new MenuPanel(commands, types);
 
         tbModel = new TableModel();
         JTable table = new JTable(tbModel);
         scrollPane = new JScrollPane(table);
 
-        window.getContentPane().add(panBtn, BorderLayout.WEST);
+        window.getContentPane().add(menuPanel, BorderLayout.WEST);
         window.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         window.setVisible(true);
