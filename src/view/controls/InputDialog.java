@@ -1,11 +1,15 @@
 package view.controls;
 
+import animal.*;
 import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Класс для реализации диалогового окна для заполнения
@@ -29,6 +33,54 @@ public class InputDialog extends JPanel {
         this(commands, types);
         fillDialog(animal);
     }
+
+    public Animal getResult()
+    {
+        Animal animal;
+        String nick = fieldName.getText();
+        String sd = fieldDate.getText();
+        String type = listTypes.getSelectedValue();
+        List<String> cmd = listCommands.getSelectedValuesList();
+
+        Date date = null;
+        try {
+            for (String dateFormat : new String[] {"dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy"} ) {
+                date = parseDate(sd, dateFormat);
+                if (date != null)
+                    break;
+            }
+            if (nick == null || date == null || nick.isBlank())
+                throw new NullPointerException();
+
+            switch (type)
+            {
+                case "Cat" -> animal = new Cat(nick, date);
+                case "Dog" -> animal = new Dog(nick, date);
+                case "Hamster" -> animal = new Hamster(nick, date);
+                case "Horse" -> animal = new Horse(nick, date);
+                case "Camel" -> animal = new Camel(nick, date);
+                case "Donkey" -> animal = new Donkey(nick, date);
+                default -> animal = null;
+            }
+            // добавляем команды
+            for (String s : cmd) {
+                animal.addCommand(s);
+            }
+            return animal;
+
+        } catch (NullPointerException ignored) {}
+        return null;
+    }
+
+    private Date parseDate(String source, String format) throws NullPointerException
+    {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        try {
+            return simpleDateFormat.parse(source.replaceAll("\\s+", " ").trim());
+        } catch (ParseException ignored) {}
+        return null;
+    }
+
 
     /**
      * Заполняем поля данными Animal

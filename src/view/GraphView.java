@@ -39,7 +39,7 @@ public class GraphView extends View implements ActionListener {
         // создаём панели
         tbModel = new AnimalTable();
         table = new JTable(tbModel);
-        menuPanel = new MenuPanel(commands, types);
+        menuPanel = new MenuPanel(types);
         scrollPane = new JScrollPane(table);
 
         window.getContentPane().add(menuPanel, BorderLayout.WEST);
@@ -81,13 +81,18 @@ public class GraphView extends View implements ActionListener {
 
     private void newAnimal()
     {
-        if (JOptionPane.showConfirmDialog(null,
-                new InputDialog(commands, types),
-                "Добавление животного",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+        InputDialog dlg = new InputDialog(commands, types);
+        if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
+                                                JOptionPane.OK_CANCEL_OPTION,
+                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
         {
             System.out.println("YES");
+            Animal animal = dlg.getResult();
+            if (animal != null)
+            {
+                System.out.println("ADD ANIMAL: " + animal);
+            }
+
         } else {
             System.out.println("Cansel");
         }
@@ -101,14 +106,18 @@ public class GraphView extends View implements ActionListener {
             Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
             if (animal != null)
             {
-                if (JOptionPane.showConfirmDialog(
-                        null,
-                        new InputDialog(animal, commands, types),
-                        "Изменить данные",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+                InputDialog dlg = new InputDialog(animal, commands, types);
+                if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
+                                                JOptionPane.OK_CANCEL_OPTION,
+                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
                 {
                     System.out.println("YES");
+                    animal = dlg.getResult();
+                    if (animal != null)
+                    {
+                        System.out.println("UPDATE ANIMAL: " + animal);
+                    }
+
                 } else {
                     System.out.println("Cansel");
                 }

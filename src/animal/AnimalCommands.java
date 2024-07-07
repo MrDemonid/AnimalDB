@@ -15,7 +15,7 @@ public class AnimalCommands implements Iterable<String> {
 
     public void addCommand(String cmd)
     {
-        if (!commands.contains(cmd))
+        if (cmd != null && !commands.contains(cmd))
             commands.add(cmd);
     }
 

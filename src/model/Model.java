@@ -3,6 +3,7 @@ package model;
 import animal.base.Animal;
 import model.dao.DatabaseModel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,6 +25,14 @@ public class Model implements IModel {
         connect();
     }
 
+    public void close()
+    {
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException ignored) {}
+        }
+    }
 
     public void addAnimal(Animal animal)
     {
@@ -40,9 +49,15 @@ public class Model implements IModel {
     private boolean connect()
     {
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+
             con = DriverManager.getConnection(url, user, password);
             db = new DatabaseModel(con);
             return true;
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
+            System.out.println("no sync MySQL driver");
+
         } catch (SQLException e) {
             System.out.println("error connect to database");
         }
