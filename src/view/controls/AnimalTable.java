@@ -23,6 +23,16 @@ public class AnimalTable extends AbstractTableModel {
         animals = new ArrayList<>();
     }
 
+    public Animal getRow(int row)
+    {
+        try {
+            return animals.get(row);
+        } catch (IndexOutOfBoundsException e)
+        {
+            return null;
+        }
+    }
+
     /**
      * Определяет типы данных для каждого столбца
      * @param classes список типов

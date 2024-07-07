@@ -6,7 +6,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Класс для реализации диалогового окна для заполнения
@@ -31,6 +30,10 @@ public class InputDialog extends JPanel {
         fillDialog(animal);
     }
 
+    /**
+     * Заполняем поля данными Animal
+     * @param animal животное, которое необходимо немного изменить
+     */
     private void fillDialog(Animal animal)
     {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -38,9 +41,21 @@ public class InputDialog extends JPanel {
 
         fieldName.setText(animal.getNickName());
         fieldDate.setText(date);
-
-
-//        data.setSelectedIndex(1);
+        // выделяем поля команд
+        DefaultListModel<String> modelCmd = (DefaultListModel<String>) listCommands.getModel();
+        ArrayList<Integer> selected = new ArrayList<>();
+        for (String command : animal.getCommands())
+        {
+            int idx = modelCmd.indexOf(command);
+            if (idx >= 0)
+                selected.add(idx);
+        }
+        listCommands.setSelectedIndices(selected.stream().mapToInt(i -> i).toArray());
+        // выделяем поле вида
+        modelCmd = (DefaultListModel<String>) listTypes.getModel();
+        int index = modelCmd.indexOf(animal.getClass().getSimpleName());
+        listTypes.setSelectedIndex(index);
+        listTypes.setEnabled(false);
     }
 
     private void makeDialog(ArrayList<String> commands, ArrayList<String> types)
@@ -58,13 +73,13 @@ public class InputDialog extends JPanel {
 
         listTypes = addList(types, ListSelectionModel.SINGLE_SELECTION, "gap");
         listCommands = addList(commands, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, "span, grow, wrap");
-
-//        // TODO: добавить заполнение и выделение полей, если это предусмотрено !!!!
     }
 
     private JList<String> addList(ArrayList<String> list, int selection, String align)
     {
-        JList<String> data = new JList<>(list.toArray(new String[0]));
+        DefaultListModel<String> model = new DefaultListModel<>();
+        model.addAll(list);
+        JList<String> data = new JList<>(model);
         data.setSelectionMode(selection);
         JScrollPane typeScroll = new JScrollPane(data);
         add(typeScroll, align);
