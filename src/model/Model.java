@@ -24,61 +24,6 @@ public class Model implements IModel {
         connect();
     }
 
-//    public void showAnimals()
-//    {
-//        ArrayList<Animal> cmd = db.getAll();
-//        if (cmd == null)
-//        {
-//            System.out.println("error: database is problem");
-//            return;
-//        }
-//        System.out.println("Animals: " + cmd);
-//        for (Animal animal : cmd) {
-//            System.out.println(animal);
-//        }
-//    }
-//
-//    public void showCommands()
-//    {
-//        ArrayList<String> cmd = db.getCommandsList();
-//        if (cmd == null)
-//        {
-//            System.out.println("error: database is problem");
-//            return;
-//        }
-//        System.out.println("commands: " + cmd);
-//    }
-//
-//    public void showType(String type)
-//    {
-//        ArrayList<Animal> cmd = db.getByType(type);
-//        if (cmd == null)
-//        {
-//            System.out.println("error: database is problem");
-//            return;
-//        }
-//        System.out.println("Type: " + cmd);
-//    }
-//
-//    public void showId(int id)
-//    {
-//        ArrayList<Animal> cmd = db.getById(id);
-//        if (cmd == null)
-//        {
-//            System.out.println("error: database is problem");
-//            return;
-//        }
-//        System.out.println("Id: " + cmd);
-//    }
-//
-//    public void showBithdays(Date from, Date to)
-//    {
-//        ArrayList<Animal> res = db.getByBirthdays(from, to);
-//        if (res != null)
-//        {
-//            System.out.println("Animals: " + res);
-//        }
-//    }
 
     public void addAnimal(Animal animal)
     {
@@ -92,11 +37,6 @@ public class Model implements IModel {
 
 
 
-
-
-
-
-
     private boolean connect()
     {
         try {
@@ -104,6 +44,7 @@ public class Model implements IModel {
             db = new DatabaseModel(con);
             return true;
         } catch (SQLException e) {
+            System.out.println("error connect to database");
         }
         return false;
     }
@@ -138,5 +79,11 @@ public class Model implements IModel {
     public ArrayList<String> getCommandsList()
     {
         return db.getCommandsList();
+    }
+
+    @Override
+    public ArrayList<String> getTypesList()
+    {
+        return db.getTypesList();
     }
 }

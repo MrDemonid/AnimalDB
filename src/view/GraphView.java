@@ -1,20 +1,19 @@
 package view;
 
 import animal.base.Animal;
+import view.controls.AnimalTable;
 import view.controls.MenuPanel;
-import view.controls.TableModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class GraphView extends View {
 
     private JFrame window;
     private MenuPanel menuPanel;
     private JScrollPane scrollPane;
-    private TableModel tbModel;
+    private AnimalTable tbModel;
 
     private ArrayList<String> commands;     // список команд
     private ArrayList<String> types;        // список видов животных
@@ -34,7 +33,7 @@ public class GraphView extends View {
         // создаём панели
         menuPanel = new MenuPanel(commands, types);
 
-        tbModel = new TableModel();
+        tbModel = new AnimalTable();
         JTable table = new JTable(tbModel);
         scrollPane = new JScrollPane(table);
 
@@ -51,15 +50,7 @@ public class GraphView extends View {
     public void showTable(ArrayList<Animal> animals)
     {
         try {
-            tbModel.setColumnsClass(Integer.class, String.class, Date.class, String.class, String.class);
-            tbModel.setColumnsName("ID", "Имя", "День рождения", "Команды", "Комментарии");
-
-            ArrayList<ArrayList<Object>> rows = new ArrayList<>();
-            for (Animal animal : animals)
-            {
-                rows.add(makeRow(animal));
-            }
-            tbModel.addSource(rows);
+            tbModel.addSource(animals);
             scrollPane.repaint();
 
         } catch (NullPointerException e)
@@ -68,15 +59,4 @@ public class GraphView extends View {
         }
     }
 
-
-    private ArrayList<Object> makeRow(Animal animal)
-    {
-        ArrayList<Object> res = new ArrayList<>();
-        res.add(animal.getId());
-        res.add(animal.getNickName());
-        res.add(animal.getBirthDay());
-        res.add(animal.getCommands().toString());
-        res.add(animal.getComments());
-        return res;
-    }
 }

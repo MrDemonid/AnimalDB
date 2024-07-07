@@ -10,8 +10,9 @@ public class Main {
 
         Model model = new Model();
         ArrayList<String> cmd = model.getCommandsList();
+        ArrayList<String> typ = model.getTypesList();
 
-        View view = new GraphView(cmd, new ArrayList<String>());
+        View view = new GraphView(cmd, typ);
 
 
 

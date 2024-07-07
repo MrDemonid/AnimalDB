@@ -13,4 +13,5 @@ public interface IModel {
     ArrayList<Animal> getById(int id);
 
     ArrayList<String> getCommandsList();
+    ArrayList<String> getTypesList();
 }

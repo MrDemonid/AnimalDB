@@ -3,6 +3,7 @@ package model.dao;
 import animal.base.Animal;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,12 +15,14 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
     Connection con;
 
     CommandsDB commandsDB;
+    TypesDB typesDB;
     AnimalDB db;
 
     public DatabaseModel(Connection con)
     {
         this.con = con;
         commandsDB = new CommandsDB(con);
+        typesDB = new TypesDB(con);
         db = new AnimalDB(con);
     }
 
@@ -72,21 +75,65 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
         return commandsDB.getCommandsList();
     }
 
+    @Override
+    public ArrayList<String> getTypesList() {
+        return typesDB.getTypesList();
+    }
+
     /**
      * Обновление данных животного
      */
     @Override
-    public void updateAnimal(Animal animal) {
-        db.updateAnimal(animal);
+    public boolean updateAnimal(Animal animal)
+    {
+        try {
+            con.setAutoCommit(false);
+            db.updateAnimal(animal);
+            // добавляем команды
+            commandsDB.setCommands(animal);
+            con.commit();
+            return true;
+        } catch (NullPointerException | SQLException e) {
+            System.out.println("DB error: " + e.getMessage());
+            // отменяем транзакцию
+            try {
+                con.rollback();
+            } catch (SQLException ignored) {}
+        } finally {
+            // нужно восстановить AutoCommit()
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException ignored) {}
+        }
+        return false;
     }
 
     /**
      * Добавление нового животного
      */
     @Override
-    public void addAnimal(Animal animal)
+    public boolean addAnimal(Animal animal)
     {
-        db.addAnimal(animal);
+        try {
+            con.setAutoCommit(false);
+            db.addAnimal(animal);
+            // добавляем команды
+            commandsDB.setCommands(animal);
+            con.commit();
+            return true;
+        } catch (NullPointerException | SQLException e) {
+            System.out.println("DB error: " + e.getMessage());
+            // отменяем транзакцию
+            try {
+                con.rollback();
+            } catch (SQLException ignored) {}
+        } finally {
+            // нужно восстановить AutoCommit()
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException ignored) {}
+        }
+        return false;
     }
 
     @Override

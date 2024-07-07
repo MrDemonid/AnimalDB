@@ -14,7 +14,8 @@ public interface IDataBase {
     ArrayList<Animal> getById(int id);
 
     ArrayList<String> getCommandsList();
+    ArrayList<String> getTypesList();
 
-    void updateAnimal(Animal animal);
-    void addAnimal(Animal animal);
+    boolean updateAnimal(Animal animal);
+    boolean addAnimal(Animal animal);
 }

@@ -1,5 +1,7 @@
 package model.dao;
 
+import animal.base.Animal;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,12 +10,16 @@ import java.util.ArrayList;
 
 public class CommandsDB implements IDbCloseable {
 
-    static final String sqlGetAll = "SELECT id, denotation FROM cmd_info;";
+    static final String sqlGetAll =  "SELECT id, denotation FROM cmd_info;";
     static final String sqlGetById = "SELECT denotation FROM cmd_info JOIN cmd_list ON cmd_list.cmd_id = cmd_info.id JOIN animals ON animals.id = cmd_list.anm_id WHERE animals.id = ?;";
 
-    Connection con;
-    PreparedStatement stAll;
-    PreparedStatement stById;
+    // команды без предварительной компиляции
+    static final String sqlDelete =  "DELETE FROM cmd_list WHERE anm_id=?;";
+    static final String sqlInsCmd =  "INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;";
+
+    private final Connection con;
+    private PreparedStatement stById;
+
 
     public CommandsDB(Connection con)
     {
@@ -34,14 +40,36 @@ public class CommandsDB implements IDbCloseable {
      */
     public ArrayList<String> getCommandsList()
     {
-        try {
-            ResultSet rs = stAll.executeQuery();
+        try (PreparedStatement st_cmd = con.prepareStatement(sqlGetAll);)
+        {
+            ResultSet rs = st_cmd.executeQuery();
             return makeResult(rs);
         }  catch (NullPointerException | SQLException e) {
             System.out.println(getClass().getSimpleName() + " error: " + e.getMessage());
-            return null;
+        }
+        return null;
+    }
+
+    public void setCommands(Animal animal) throws SQLException
+    {
+        try (PreparedStatement st_cmd = con.prepareStatement(sqlInsCmd);
+             PreparedStatement st_del = con.prepareStatement(sqlDelete);)
+        {
+            // удаляем старые данные из cmd_list
+            st_del.setInt(1, animal.getId());
+            st_del.executeUpdate();
+            // добавляем новые
+            for (String s : animal.getCommands())
+            {
+                st_cmd.setInt(1, animal.getId());
+                st_cmd.setString(2, s);
+                st_cmd.executeUpdate();
+            }
+        } catch (NullPointerException | SQLException e) {
+            throw new SQLException("setCommands() error: " + e.getMessage());
         }
     }
+
 
     /**
      * Возвращает список команд животного
@@ -61,14 +89,12 @@ public class CommandsDB implements IDbCloseable {
     @Override
     public void close()
     {
-        stAll = closeStatement(stAll);
         stById = closeStatement(stById);
     }
 
     private void prepareStatements()
     {
         try {
-            stAll = con.prepareStatement(sqlGetAll);
             stById = con.prepareStatement(sqlGetById);
         } catch (SQLException e) {
             close();
