@@ -1,10 +1,10 @@
 package view;
 
 import animal.base.Animal;
-import net.miginfocom.swing.MigLayout;
 import view.controls.AnimalTable;
 import view.controls.InputDialog;
 import view.controls.MenuPanel;
+import view.controls.events.EventID;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +39,7 @@ public class GraphView extends View implements ActionListener {
         // создаём панели
         tbModel = new AnimalTable();
         table = new JTable(tbModel);
-        menuPanel = new MenuPanel(types);
+        menuPanel = new MenuPanel(types, commands);
         scrollPane = new JScrollPane(table);
 
         window.getContentPane().add(menuPanel, BorderLayout.WEST);
@@ -71,10 +71,11 @@ public class GraphView extends View implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e)
     {
+
         switch (e.getActionCommand())
         {
-            case "New" -> newAnimal();
-            case "Update" -> updateAnimal();
+            case "NewAnimal" -> newAnimal();
+            case "UpdateAnimal" -> updateAnimal();
         }
         System.out.println("action: " + e.getActionCommand());
     }

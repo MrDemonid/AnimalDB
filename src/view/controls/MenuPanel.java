@@ -1,10 +1,12 @@
 package view.controls;
 
 import net.miginfocom.swing.MigLayout;
+import view.controls.events.EventID;
+import view.controls.events.FilterDateEvent;
+import view.controls.events.FilterTypeEvent;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class MenuPanel extends JPanel {
     private final EventListenerList listenerList;
 
     ArrayList<String> types;
+    ArrayList<String> commands;
 
     // данные фильтров вывода
     JTextField filterDateFrom;
@@ -23,11 +26,12 @@ public class MenuPanel extends JPanel {
     JComboBox filterType;
 
 
-    public MenuPanel(ArrayList<String> types)
+    public MenuPanel(ArrayList<String> types, ArrayList<String> commands)
     {
         super();
         listenerList = new EventListenerList();
         this.types = types;
+        this.commands = commands;
         init();
     }
 
@@ -98,7 +102,8 @@ public class MenuPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new ActionEvent(e.getSource(), 201, "FilterAll"));
+            fireActionPerformed(new ActionEvent(e.getSource(),
+                    EventID.FILTER_ALL.getCode(), EventID.FILTER_ALL.getValue()));
         }
     };
 
@@ -109,7 +114,8 @@ public class MenuPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new ActionEvent(e.getSource(), 201, "FilterDate"));
+            fireActionPerformed(new FilterDateEvent(e.getSource(),
+                    EventID.FILTER_DATE.getCode(), EventID.FILTER_DATE.getValue(), filterDateFrom.getText(), filterDateTo.getText()));
         }
     };
 
@@ -120,7 +126,8 @@ public class MenuPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new ActionEvent(e.getSource(), 201, "FilterType"));
+            fireActionPerformed(new FilterTypeEvent(e.getSource(),
+                    EventID.FILTER_TYPE.getCode(), EventID.FILTER_TYPE.getValue(), (String) filterType.getSelectedItem()));
         }
     };
 
@@ -134,7 +141,8 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            fireActionPerformed(new ActionEvent(e.getSource(), 101, "New"));
+            fireActionPerformed(new ActionEvent(e.getSource(),
+                    EventID.ANIMAL_NEW.getCode(), EventID.ANIMAL_NEW.getValue()));
         }
     };
 
@@ -145,7 +153,8 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            fireActionPerformed(new ActionEvent(e.getSource(), 102, "Update"));
+            fireActionPerformed(new ActionEvent(e.getSource(),
+                    EventID.ANIMAL_UPDATE.getCode(), EventID.ANIMAL_UPDATE.getValue()));
         }
     };
 
