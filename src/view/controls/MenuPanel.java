@@ -103,7 +103,7 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             fireActionPerformed(new ActionEvent(e.getSource(),
-                    EventID.FILTER_ALL.getCode(), EventID.FILTER_ALL.getValue()));
+                    101, EventID.FILTER_ALL));
         }
     };
 
@@ -115,7 +115,7 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             fireActionPerformed(new FilterDateEvent(e.getSource(),
-                    EventID.FILTER_DATE.getCode(), EventID.FILTER_DATE.getValue(), filterDateFrom.getText(), filterDateTo.getText()));
+                    102, EventID.FILTER_BY_DATE, filterDateFrom.getText(), filterDateTo.getText()));
         }
     };
 
@@ -127,7 +127,7 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             fireActionPerformed(new FilterTypeEvent(e.getSource(),
-                    EventID.FILTER_TYPE.getCode(), EventID.FILTER_TYPE.getValue(), (String) filterType.getSelectedItem()));
+                    103, EventID.FILTER_BY_TYPE, (String) filterType.getSelectedItem()));
         }
     };
 
@@ -141,8 +141,11 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            fireActionPerformed(new ActionEvent(e.getSource(),
-                    EventID.ANIMAL_NEW.getCode(), EventID.ANIMAL_NEW.getValue()));
+            EditDialog dlg = new EditDialog(null, true, commands, types);
+
+
+//            fireActionPerformed(new ActionEvent(e.getSource(),
+//                    200, EventID.ADD_NEW_ANIMAL));
         }
     };
 
@@ -154,7 +157,7 @@ public class MenuPanel extends JPanel {
         public void actionPerformed(ActionEvent e)
         {
             fireActionPerformed(new ActionEvent(e.getSource(),
-                    EventID.ANIMAL_UPDATE.getCode(), EventID.ANIMAL_UPDATE.getValue()));
+                    201, EventID.UPDATE_ANIMAL));
         }
     };
 

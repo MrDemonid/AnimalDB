@@ -5,6 +5,8 @@ import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
  * Класс для реализации диалогового окна для заполнения
  * или изменения данных о животном
  */
-public class InputDialog extends JPanel {
+public class InputDialog extends JPanel implements ActionListener {
     private JTextField fieldName;
     private JTextField fieldDate;
     private JList<String> listTypes;
@@ -114,6 +116,11 @@ public class InputDialog extends JPanel {
     {
         fieldName = new JTextField(15);
         fieldDate = new JTextField(15);
+        JButton ok = new JButton("Ok");
+        JButton cancel = new JButton("Cancel");
+        ok.addActionListener(this);
+        cancel.addActionListener(this);;
+
 
         add(new JLabel("Имя:"), "gap, sg 1");
         add(fieldName, "wrap");
@@ -125,6 +132,9 @@ public class InputDialog extends JPanel {
 
         listTypes = addList(types, ListSelectionModel.SINGLE_SELECTION, "gap");
         listCommands = addList(commands, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, "span, grow, wrap");
+
+        add(ok, "gaptop 20, skip 1, split, sg buttons, align right");
+        add(cancel, "sg buttons");
     }
 
     private JList<String> addList(ArrayList<String> list, int selection, String align)
@@ -136,5 +146,12 @@ public class InputDialog extends JPanel {
         JScrollPane typeScroll = new JScrollPane(data);
         add(typeScroll, align);
         return data;
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        System.out.println("action: " + e.getActionCommand());
     }
 }

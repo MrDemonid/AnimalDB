@@ -74,8 +74,8 @@ public class GraphView extends View implements ActionListener {
 
         switch (e.getActionCommand())
         {
-            case "NewAnimal" -> newAnimal();
-            case "UpdateAnimal" -> updateAnimal();
+            case EventID.ADD_NEW_ANIMAL -> newAnimal();
+            case EventID.UPDATE_ANIMAL -> updateAnimal();
         }
         System.out.println("action: " + e.getActionCommand());
     }
