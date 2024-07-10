@@ -40,7 +40,8 @@ public class NewAnimalEvent extends SimpleDateEvent {
 
     @Override
     public String toString() {
-        return "NewAnimalEvent{" +
+        return getClass().getSimpleName() +
+                "{" +
                 "nick='" + nick + '\'' +
                 ", birthDay=" + birthDay +
                 ", type='" + type + '\'' +

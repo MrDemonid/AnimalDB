@@ -8,4 +8,6 @@ public class UpdateAnimalEvent extends NewAnimalEvent {
     {
         super(source, nick, type, date, commands);
     }
+
+
 }

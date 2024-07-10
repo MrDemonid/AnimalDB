@@ -19,9 +19,8 @@ public class AnimalCommands implements Iterable<String> {
             commands.add(cmd);
     }
 
-    public boolean check(String cmd)
-    {
-        return commands.contains(cmd);
+    public ArrayList<String> getCommands() {
+        return commands;
     }
 
     @Override

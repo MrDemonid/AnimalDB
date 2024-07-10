@@ -2,6 +2,7 @@ package view.controls;
 
 import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
+import view.controls.unused.TableModel;
 import view.events.*;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.EventListener;
 
 import static java.lang.System.exit;
 
@@ -16,6 +18,7 @@ public class MenuPanel extends JPanel {
 
     private final EventListenerList listenerList;
 
+    JTable table;                   // ссылка на таблицу, для автозаполнения полей формы UpdateAnimal()
     ArrayList<String> types;
     ArrayList<String> commands;
 
@@ -25,10 +28,11 @@ public class MenuPanel extends JPanel {
     JComboBox filterType;
 
 
-    public MenuPanel(ArrayList<String> types, ArrayList<String> commands)
+    public MenuPanel(JTable table, ArrayList<String> types, ArrayList<String> commands)
     {
         super();
         listenerList = new EventListenerList();
+        this.table = table;
         this.types = types;
         this.commands = commands;
         init();
@@ -143,9 +147,7 @@ public class MenuPanel extends JPanel {
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
             {
-                System.out.println("YES");
-                NewAnimalEvent event = new NewAnimalEvent(e.getSource(), dlg.getFieldName(),
-                                            dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
+                NewAnimalEvent event = new NewAnimalEvent(e.getSource(), dlg.getFieldName(), dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
                 if (event.getBirthDay() != null
                         && event.getNick() != null
                         && event.getType() != null
@@ -154,9 +156,6 @@ public class MenuPanel extends JPanel {
                         && !event.getType().isBlank()
                 )
                     fireNewAnimal(event);
-
-            } else {
-                System.out.println("Cansel");
             }
         }
     };
@@ -168,34 +167,35 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-//            int row = table.getSelectedRow();
-//            if (row >= 0)
-//            {
-//                Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
-//                if (animal != null)
-//                {
-//                    InputDialog dlg = new InputDialog(animal, commands, types);
-//                    if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
-//                            JOptionPane.OK_CANCEL_OPTION,
-//                            JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
-//                    {
-//                        System.out.println("YES");
-//                        animal = dlg.getResult();
-//                        if (animal != null)
-//                        {
-//                            System.out.println("UPDATE ANIMAL: " + animal);
-//                        }
-//
-//                    } else {
-//                        System.out.println("Cansel");
-//                    }
-//
-//                }
-//            }
+            AnimalTable model = (AnimalTable) table.getModel();
+            int row = table.getSelectedRow();
+            if (row >= 0)
+            {
+                Animal animal = model.getRow(table.convertRowIndexToModel(row));
+                if (animal != null)
+                {
+                    InputDialog dlg = new InputDialog(animal.getNickName(),
+                            animal.getClass().getSimpleName(),
+                            animal.getBirthDay(),
+                            animal.getCommands().getCommands(),
+                            commands, types);
+                    if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        UpdateAnimalEvent event = new UpdateAnimalEvent(e.getSource(), dlg.getFieldName(), dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
+                        if (event.getBirthDay() != null
+                                && event.getNick() != null
+                                && event.getType() != null
+                                && event.getCommands() != null
+                                && !event.getNick().isBlank()
+                                && !event.getType().isBlank()
+                        )
+                            fireUpdateAnimal(event);
+                    }
+                }
+            }
         }
     };
-
-
 
     /*
      * ======================================================
@@ -203,29 +203,16 @@ public class MenuPanel extends JPanel {
      * ======================================================
      */
 
-    public void addFilterAllListener(FilterAllListener listener)
+    public <T extends EventListener> void removeListeners(Class<T> t, T l)
     {
-        listenerList.add(FilterAllListener.class, listener);
+        System.out.println("Remove: '" + t + "'");
+        listenerList.remove(t, l);
     }
 
-    public void addFilterDateListener(FilterDateListener listener)
+    public <T extends EventListener> void addListener(Class<T> t, T l)
     {
-        listenerList.add(FilterDateListener.class, listener);
-    }
-
-    public void addFilterTypeListener(FilterTypeListener listener)
-    {
-        listenerList.add(FilterTypeListener.class, listener);
-    }
-
-    public void addNewAnimalListener(NewAnimalListener listener)
-    {
-        listenerList.add(NewAnimalListener.class, listener);
-    }
-
-    public void addUpdateAnimalListener(UpdateAnimalListener listener)
-    {
-        listenerList.add(UpdateAnimalListener.class, listener);
+        System.out.println("Add listener: '" + t + "'");
+        listenerList.add(t, l);
     }
 
     private void fireFilterAll(FilterAllEvent event)

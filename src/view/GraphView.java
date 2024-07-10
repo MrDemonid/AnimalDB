@@ -7,6 +7,8 @@ import view.events.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class GraphView extends View {
@@ -26,6 +28,7 @@ public class GraphView extends View {
         this.commands = commands;
         this.types = types;
         init();
+        window.addWindowListener(new ViewWindowAdapter());
     }
 
     private void init()
@@ -36,7 +39,7 @@ public class GraphView extends View {
         // создаём панели
         tbModel = new AnimalTable();
         table = new JTable(tbModel);
-        menuPanel = new MenuPanel(types, commands);
+        menuPanel = new MenuPanel(table, types, commands);
         scrollPane = new JScrollPane(table);
 
         window.getContentPane().add(menuPanel, BorderLayout.WEST);
@@ -45,11 +48,20 @@ public class GraphView extends View {
         window.setVisible(true);
 
         // Регистрируем обработчики событий
-        menuPanel.addFilterAllListener(doFilterAll);
-        menuPanel.addFilterDateListener(doFilterDate);
-        menuPanel.addFilterTypeListener(doFilterType);
-        menuPanel.addNewAnimalListener(doNewAnimal);
-        menuPanel.addUpdateAnimalListener(doUpdateAnimal);
+        menuPanel.addListener(FilterAllListener.class, doFilterAll);
+        menuPanel.addListener(FilterDateListener.class, doFilterDate);
+        menuPanel.addListener(FilterTypeListener.class, doFilterType);
+        menuPanel.addListener(NewAnimalListener.class, doNewAnimal);
+        menuPanel.addListener(UpdateAnimalListener.class, doUpdateAnimal);
+    }
+
+    public void close()
+    {
+        menuPanel.removeListeners(FilterAllListener.class, doFilterAll);
+        menuPanel.removeListeners(FilterDateListener.class, doFilterDate);
+        menuPanel.removeListeners(FilterTypeListener.class, doFilterType);
+        menuPanel.removeListeners(NewAnimalListener.class, doNewAnimal);
+        menuPanel.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
     }
 
     @Override
@@ -110,52 +122,25 @@ public class GraphView extends View {
 
 
 
-//    private void newAnimal()
-//    {
-//        InputDialog dlg = new InputDialog(commands, types);
-//        if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
-//                                                JOptionPane.OK_CANCEL_OPTION,
-//                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
-//        {
-//            System.out.println("YES");
-//            Animal animal = dlg.getResult();
-//            if (animal != null)
-//            {
-//                System.out.println("ADD ANIMAL: " + animal);
-//            }
-//
-//        } else {
-//            System.out.println("Cansel");
-//        }
-//    }
 
-//    private void updateAnimal()
-//    {
-//        int row = table.getSelectedRow();
-//        if (row >= 0)
-//        {
-//            Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
-//            if (animal != null)
-//            {
-//                InputDialog dlg = new InputDialog(animal, commands, types);
-//                if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
-//                                                JOptionPane.OK_CANCEL_OPTION,
-//                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
-//                {
-//                    System.out.println("YES");
-//                    animal = dlg.getResult();
-//                    if (animal != null)
-//                    {
-//                        System.out.println("UPDATE ANIMAL: " + animal);
-//                    }
-//
-//                } else {
-//                    System.out.println("Cansel");
-//                }
-//
-//            }
-//        }
-//
-//    }
+    /**
+     *
+     *  Слушатель эвентов окна приложения, для загрузки и сохранения параметров окна
+     *
+     */
+    public class ViewWindowAdapter extends WindowAdapter {
+
+        @Override
+        public void windowClosing(WindowEvent e)
+        {
+            if (e.getSource() instanceof JFrame && (JFrame) e.getSource() == window)
+            {
+                close();
+            }
+            System.exit(0);
+        }
+
+    }
+
 
 }

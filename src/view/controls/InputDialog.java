@@ -1,17 +1,11 @@
 package view.controls;
 
-import animal.*;
-import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Класс для реализации диалогового окна для заполнения
@@ -30,10 +24,10 @@ public class InputDialog extends JPanel {
         makeDialog(commands, types);
     }
 
-    public InputDialog(String nick, String type, Date birthDay, ArrayList<String> commands, ArrayList<String> types)
+    public InputDialog(String nick, String type, Date birthDay, ArrayList<String> selected, ArrayList<String> commands, ArrayList<String> types)
     {
         this(commands, types);
-        setDatas(nick, type, birthDay, commands);
+        setDatas(nick, type, birthDay, selected);
     }
 
     public String getFieldName()
@@ -48,7 +42,11 @@ public class InputDialog extends JPanel {
 
     public ArrayList<String> getCommands()
     {
-        return (ArrayList<String>) listCommands.getSelectedValuesList();
+        try {
+            return (ArrayList<String>) listCommands.getSelectedValuesList();
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     public String getFieldType()
@@ -58,57 +56,31 @@ public class InputDialog extends JPanel {
 
     private void setDatas(String nick, String type, Date birthDay, ArrayList<String> commands)
     {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        String date = formatter.format(birthDay);
-        fieldName.setText(nick);
-        fieldDate.setText(date);
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            String date = formatter.format(birthDay);
+            fieldName.setText(nick);
+            fieldDate.setText(date);
 
-        // выделяем поля команд
-        DefaultListModel<String> modelCmd = (DefaultListModel<String>) listCommands.getModel();
-        ArrayList<Integer> selected = new ArrayList<>();
-        for (String command : commands)
-        {
-            int idx = modelCmd.indexOf(command);
-            if (idx >= 0)
-                selected.add(idx);
-        }
-        listCommands.setSelectedIndices(selected.stream().mapToInt(i -> i).toArray());
+            // выделяем поля команд
+            DefaultListModel<String> modelCmd = (DefaultListModel<String>) listCommands.getModel();
+            ArrayList<Integer> selected = new ArrayList<>();
+            for (String command : commands)
+            {
+                int idx = modelCmd.indexOf(command);
+                if (idx >= 0)
+                    selected.add(idx);
+            }
+            listCommands.setSelectedIndices(selected.stream().mapToInt(i -> i).toArray());
 
-        // выделяем поле вида
-        modelCmd = (DefaultListModel<String>) listTypes.getModel();
-        int index = modelCmd.indexOf(type);
-        listTypes.setSelectedIndex(index);
-        listTypes.setEnabled(false);
+            // выделяем поле вида
+            modelCmd = (DefaultListModel<String>) listTypes.getModel();
+            int index = modelCmd.indexOf(type);
+            listTypes.setSelectedIndex(index);
+            listTypes.setEnabled(false);
+        } catch (Exception ignored) {}
     }
 
-//    /**
-//     * Заполняем поля данными Animal
-//     * @param animal животное, которое необходимо немного изменить
-//     */
-//    private void fillDialog(Animal animal)
-//    {
-//        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-//        String date = formatter.format(animal.getBirthDay());
-//
-//        fieldName.setText(animal.getNickName());
-//        fieldDate.setText(date);
-//        // выделяем поля команд
-//        DefaultListModel<String> modelCmd = (DefaultListModel<String>) listCommands.getModel();
-//
-//        ArrayList<Integer> selected = new ArrayList<>();
-//        for (String command : animal.getCommands())
-//        {
-//            int idx = modelCmd.indexOf(command);
-//            if (idx >= 0)
-//                selected.add(idx);
-//        }
-//        listCommands.setSelectedIndices(selected.stream().mapToInt(i -> i).toArray());
-//        // выделяем поле вида
-//        modelCmd = (DefaultListModel<String>) listTypes.getModel();
-//        int index = modelCmd.indexOf(animal.getClass().getSimpleName());
-//        listTypes.setSelectedIndex(index);
-//        listTypes.setEnabled(false);
-//    }
 
     private void makeDialog(ArrayList<String> commands, ArrayList<String> types)
     {
