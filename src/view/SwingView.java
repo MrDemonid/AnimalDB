@@ -7,45 +7,36 @@ import view.events.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-public class GraphView extends View {
+public class SwingView extends View {
 
-    private JFrame window;
     private MenuPanel menuPanel;
+
     private JScrollPane scrollPane;
-
-    private AnimalTable tbModel;
     private JTable table;
+    private AnimalTable tbModel;
 
-    private ArrayList<String> commands;     // список команд
-    private ArrayList<String> types;        // список видов животных
 
-    public GraphView(ArrayList<String> commands, ArrayList<String> types)
+    public SwingView()
     {
-        this.commands = commands;
-        this.types = types;
-        init();
-        window.addWindowListener(new ViewWindowAdapter());
+        createViews();
+        setVisible(true);
     }
 
-    private void init()
+
+    private void createViews()
     {
-        window = new JFrame("Animals database");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(800, 600);
+        setTitle("Animals database");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
         // создаём панели
         tbModel = new AnimalTable();
         table = new JTable(tbModel);
-        menuPanel = new MenuPanel(table, types, commands);
+        menuPanel = new MenuPanel(table);
         scrollPane = new JScrollPane(table);
-
-        window.getContentPane().add(menuPanel, BorderLayout.WEST);
-        window.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        window.setVisible(true);
+        getContentPane().add(menuPanel, BorderLayout.WEST);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         // Регистрируем обработчики событий
         menuPanel.addListener(FilterAllListener.class, doFilterAll);
@@ -55,8 +46,36 @@ public class GraphView extends View {
         menuPanel.addListener(UpdateAnimalListener.class, doUpdateAnimal);
     }
 
-    public void close()
+
+
+    @Override
+    public void setCommandList(ArrayList<String> commands)
     {
+        menuPanel.setCommands(commands);
+    }
+
+    @Override
+    public void setClassList(ArrayList<String> classList)
+    {
+        menuPanel.setTypes(classList);
+    }
+
+    @Override
+    public void setTableData(ArrayList<Animal> animals)
+    {
+        tbModel.addSource(animals);
+    }
+
+    @Override
+    public void update()
+    {
+        scrollPane.repaint();
+    }
+
+    @Override
+    public void done()
+    {
+        System.out.println(getClass().getSimpleName() + "() close");
         menuPanel.removeListeners(FilterAllListener.class, doFilterAll);
         menuPanel.removeListeners(FilterDateListener.class, doFilterDate);
         menuPanel.removeListeners(FilterTypeListener.class, doFilterType);
@@ -64,21 +83,8 @@ public class GraphView extends View {
         menuPanel.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
     }
 
-    @Override
-    public void showTable(ArrayList<Animal> animals)
-    {
-        try {
-            tbModel.addSource(animals);
-            scrollPane.repaint();
 
-        } catch (NullPointerException e)
-        {
-            System.out.println("showTable(): " + e.getMessage());
-        }
-    }
-
-
-    /*===========================================================================
+        /*===========================================================================
      *
      * Реализация слушателей от контролов
      *
@@ -119,28 +125,6 @@ public class GraphView extends View {
             System.out.println("do update Animal: " + event);
         }
     };
-
-
-
-
-    /**
-     *
-     *  Слушатель эвентов окна приложения, для загрузки и сохранения параметров окна
-     *
-     */
-    public class ViewWindowAdapter extends WindowAdapter {
-
-        @Override
-        public void windowClosing(WindowEvent e)
-        {
-            if (e.getSource() instanceof JFrame && (JFrame) e.getSource() == window)
-            {
-                close();
-            }
-            System.exit(0);
-        }
-
-    }
 
 
 }

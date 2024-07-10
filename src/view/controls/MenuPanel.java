@@ -28,14 +28,24 @@ public class MenuPanel extends JPanel {
     JComboBox filterType;
 
 
-    public MenuPanel(JTable table, ArrayList<String> types, ArrayList<String> commands)
+    public MenuPanel(JTable table)
     {
         super();
         listenerList = new EventListenerList();
         this.table = table;
-        this.types = types;
-        this.commands = commands;
+        this.types = new ArrayList<>();
+        this.commands = new ArrayList<>();
         init();
+    }
+
+    public void setTypes(ArrayList<String> types)
+    {
+        this.types = types;
+    }
+
+    public void setCommands(ArrayList<String> commands)
+    {
+        this.commands = commands;
     }
 
     private void init()
@@ -205,13 +215,11 @@ public class MenuPanel extends JPanel {
 
     public <T extends EventListener> void removeListeners(Class<T> t, T l)
     {
-        System.out.println("Remove: '" + t + "'");
         listenerList.remove(t, l);
     }
 
     public <T extends EventListener> void addListener(Class<T> t, T l)
     {
-        System.out.println("Add listener: '" + t + "'");
         listenerList.add(t, l);
     }
 
