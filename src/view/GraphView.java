@@ -2,17 +2,14 @@ package view;
 
 import animal.base.Animal;
 import view.controls.AnimalTable;
-import view.controls.InputDialog;
 import view.controls.MenuPanel;
-import view.controls.events.EventID;
+import view.events.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class GraphView extends View implements ActionListener {
+public class GraphView extends View {
 
     private JFrame window;
     private MenuPanel menuPanel;
@@ -48,7 +45,11 @@ public class GraphView extends View implements ActionListener {
         window.setVisible(true);
 
         // Регистрируем обработчики событий
-        menuPanel.addActionListener(this);
+        menuPanel.addFilterAllListener(doFilterAll);
+        menuPanel.addFilterDateListener(doFilterDate);
+        menuPanel.addFilterTypeListener(doFilterType);
+        menuPanel.addNewAnimalListener(doNewAnimal);
+        menuPanel.addUpdateAnimalListener(doUpdateAnimal);
     }
 
     @Override
@@ -64,68 +65,97 @@ public class GraphView extends View implements ActionListener {
         }
     }
 
-    /**
-     * Обработчик событий от кнопок панелей
-     * @param e the event to be processed
-     */
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
 
-        switch (e.getActionCommand())
-        {
-            case EventID.ADD_NEW_ANIMAL -> newAnimal();
-            case EventID.UPDATE_ANIMAL -> updateAnimal();
+    /*===========================================================================
+     *
+     * Реализация слушателей от контролов
+     *
+     ===========================================================================*/
+
+    private final FilterAllListener doFilterAll = new FilterAllListener() {
+        @Override
+        public void actionPerformed(FilterAllEvent event) {
+            System.out.println("do not filter: " + event);
         }
-        System.out.println("action: " + e.getActionCommand());
-    }
+    };
 
-    private void newAnimal()
-    {
-        InputDialog dlg = new InputDialog(commands, types);
-        if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
-                                                JOptionPane.OK_CANCEL_OPTION,
-                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+    private final FilterDateListener doFilterDate = new FilterDateListener() {
+        @Override
+        public void actionPerformed(FilterDateEvent event)
         {
-            System.out.println("YES");
-            Animal animal = dlg.getResult();
-            if (animal != null)
-            {
-                System.out.println("ADD ANIMAL: " + animal);
-            }
-
-        } else {
-            System.out.println("Cansel");
+            System.out.println("do filter by Date: " + event);
         }
-    }
+    };
 
-    private void updateAnimal()
-    {
-        int row = table.getSelectedRow();
-        if (row >= 0)
-        {
-            Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
-            if (animal != null)
-            {
-                InputDialog dlg = new InputDialog(animal, commands, types);
-                if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
-                                                JOptionPane.OK_CANCEL_OPTION,
-                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
-                {
-                    System.out.println("YES");
-                    animal = dlg.getResult();
-                    if (animal != null)
-                    {
-                        System.out.println("UPDATE ANIMAL: " + animal);
-                    }
-
-                } else {
-                    System.out.println("Cansel");
-                }
-
-            }
+    private final FilterTypeListener doFilterType = new FilterTypeListener() {
+        @Override
+        public void actionPerformed(FilterTypeEvent event) {
+            System.out.println("do filter by Class: " + event);
         }
+    };
 
-    }
+    private final NewAnimalListener doNewAnimal = new NewAnimalListener() {
+        @Override
+        public void actionPerformed(NewAnimalEvent event) {
+            System.out.println("do new Animal: " + event);
+        }
+    };
+
+    private final UpdateAnimalListener doUpdateAnimal = new UpdateAnimalListener() {
+        @Override
+        public void actionPerformed(UpdateAnimalEvent event) {
+            System.out.println("do update Animal: " + event);
+        }
+    };
+
+
+
+//    private void newAnimal()
+//    {
+//        InputDialog dlg = new InputDialog(commands, types);
+//        if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
+//                                                JOptionPane.OK_CANCEL_OPTION,
+//                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+//        {
+//            System.out.println("YES");
+//            Animal animal = dlg.getResult();
+//            if (animal != null)
+//            {
+//                System.out.println("ADD ANIMAL: " + animal);
+//            }
+//
+//        } else {
+//            System.out.println("Cansel");
+//        }
+//    }
+
+//    private void updateAnimal()
+//    {
+//        int row = table.getSelectedRow();
+//        if (row >= 0)
+//        {
+//            Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
+//            if (animal != null)
+//            {
+//                InputDialog dlg = new InputDialog(animal, commands, types);
+//                if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
+//                                                JOptionPane.OK_CANCEL_OPTION,
+//                                                JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+//                {
+//                    System.out.println("YES");
+//                    animal = dlg.getResult();
+//                    if (animal != null)
+//                    {
+//                        System.out.println("UPDATE ANIMAL: " + animal);
+//                    }
+//
+//                } else {
+//                    System.out.println("Cansel");
+//                }
+//
+//            }
+//        }
+//
+//    }
 
 }

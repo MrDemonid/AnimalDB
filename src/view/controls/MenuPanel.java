@@ -1,9 +1,8 @@
 package view.controls;
 
+import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
-import view.controls.events.EventID;
-import view.controls.events.FilterDateEvent;
-import view.controls.events.FilterTypeEvent;
+import view.events.*;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -99,11 +98,10 @@ public class MenuPanel extends JPanel {
      * слушатель кнопки "Применить" для фильтра "Все"
      */
     ActionListener lstApplyAll = new ActionListener() {
-
         @Override
-        public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new ActionEvent(e.getSource(),
-                    101, EventID.FILTER_ALL));
+        public void actionPerformed(ActionEvent e)
+        {
+            fireFilterAll(new FilterAllEvent(e.getSource()));
         }
     };
 
@@ -111,11 +109,11 @@ public class MenuPanel extends JPanel {
      * слушатель кнопки "Применить" для фильтра "По дате"
      */
     ActionListener lstApplyDate = new ActionListener() {
-
         @Override
         public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new FilterDateEvent(e.getSource(),
-                    102, EventID.FILTER_BY_DATE, filterDateFrom.getText(), filterDateTo.getText()));
+            FilterDateEvent event = new FilterDateEvent(e.getSource(), filterDateFrom.getText(), filterDateTo.getText());
+            if (event.getFrom() != null && event.getTo() != null)
+                fireFilterDate(event);
         }
     };
 
@@ -123,15 +121,14 @@ public class MenuPanel extends JPanel {
      * слушатель кнопки "Применить" для фильтра "По виду"
      */
     ActionListener lstApplyType = new ActionListener() {
-
         @Override
-        public void actionPerformed(ActionEvent e) {
-            fireActionPerformed(new FilterTypeEvent(e.getSource(),
-                    103, EventID.FILTER_BY_TYPE, (String) filterType.getSelectedItem()));
+        public void actionPerformed(ActionEvent e)
+        {
+            String s = (String) filterType.getSelectedItem();
+            if (s != null && !s.isBlank())
+                fireFilterType(new FilterTypeEvent(e.getSource(), s));
         }
     };
-
-
 
 
     /*
@@ -141,11 +138,26 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            EditDialog dlg = new EditDialog(null, true, commands, types);
+            InputDialog dlg = new InputDialog(commands, types);
+            if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+            {
+                System.out.println("YES");
+                NewAnimalEvent event = new NewAnimalEvent(e.getSource(), dlg.getFieldName(),
+                                            dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
+                if (event.getBirthDay() != null
+                        && event.getNick() != null
+                        && event.getType() != null
+                        && event.getCommands() != null
+                        && !event.getNick().isBlank()
+                        && !event.getType().isBlank()
+                )
+                    fireNewAnimal(event);
 
-
-//            fireActionPerformed(new ActionEvent(e.getSource(),
-//                    200, EventID.ADD_NEW_ANIMAL));
+            } else {
+                System.out.println("Cansel");
+            }
         }
     };
 
@@ -156,8 +168,30 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            fireActionPerformed(new ActionEvent(e.getSource(),
-                    201, EventID.UPDATE_ANIMAL));
+//            int row = table.getSelectedRow();
+//            if (row >= 0)
+//            {
+//                Animal animal = tbModel.getRow(table.convertRowIndexToModel(row));
+//                if (animal != null)
+//                {
+//                    InputDialog dlg = new InputDialog(animal, commands, types);
+//                    if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
+//                            JOptionPane.OK_CANCEL_OPTION,
+//                            JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
+//                    {
+//                        System.out.println("YES");
+//                        animal = dlg.getResult();
+//                        if (animal != null)
+//                        {
+//                            System.out.println("UPDATE ANIMAL: " + animal);
+//                        }
+//
+//                    } else {
+//                        System.out.println("Cansel");
+//                    }
+//
+//                }
+//            }
         }
     };
 
@@ -169,21 +203,65 @@ public class MenuPanel extends JPanel {
      * ======================================================
      */
 
-    public void addActionListener(ActionListener listener)
+    public void addFilterAllListener(FilterAllListener listener)
     {
-        listenerList.add(ActionListener.class, listener);
+        listenerList.add(FilterAllListener.class, listener);
     }
 
-    public void removeActionListener(ActionListener listener)
+    public void addFilterDateListener(FilterDateListener listener)
     {
-        listenerList.remove(ActionListener.class, listener);
+        listenerList.add(FilterDateListener.class, listener);
     }
 
-    private void fireActionPerformed(ActionEvent event)
+    public void addFilterTypeListener(FilterTypeListener listener)
     {
-        Object[] listeners = listenerList.getListeners(ActionListener.class);
+        listenerList.add(FilterTypeListener.class, listener);
+    }
+
+    public void addNewAnimalListener(NewAnimalListener listener)
+    {
+        listenerList.add(NewAnimalListener.class, listener);
+    }
+
+    public void addUpdateAnimalListener(UpdateAnimalListener listener)
+    {
+        listenerList.add(UpdateAnimalListener.class, listener);
+    }
+
+    private void fireFilterAll(FilterAllEvent event)
+    {
+        FilterAllListener[] listeners = listenerList.getListeners(FilterAllListener.class);
         for (int i = listeners.length-1; i>=0; i--)
-            ((ActionListener)listeners[i]).actionPerformed(event);
+            (listeners[i]).actionPerformed(event);
     }
+
+    private void fireFilterDate(FilterDateEvent event)
+    {
+        FilterDateListener[] listeners = listenerList.getListeners(FilterDateListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
+    private void fireFilterType(FilterTypeEvent event)
+    {
+        FilterTypeListener[] listeners = listenerList.getListeners(FilterTypeListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
+    private void fireNewAnimal(NewAnimalEvent event)
+    {
+        NewAnimalListener[] listeners = listenerList.getListeners(NewAnimalListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
+    private void fireUpdateAnimal(UpdateAnimalEvent event)
+    {
+        UpdateAnimalListener[] listeners = listenerList.getListeners(UpdateAnimalListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
 
 }
