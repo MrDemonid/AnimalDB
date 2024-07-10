@@ -1,7 +1,11 @@
 package control;
 
+import animal.base.Animal;
 import model.Model;
 import view.View;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 
 public class Control {
@@ -21,19 +25,24 @@ public class Control {
             public void run() {
                 // Обработка завершения приложения
                 System.out.println("Close program");
-                view.done();
+                SwingUtilities.invokeLater(() -> view.done()
+                );
             }
         });
     }
 
     public void run()
     {
-        view.setCommandList(model.getCommandsList());
-        view.setClassList(model.getTypesList());
+        ArrayList<String> cmd = model.getCommandsList();
+        ArrayList<String> type = model.getTypesList();
+        ArrayList<Animal> anm = model.getAllAnimals();
 
-        view.setTableData(model.getAllAnimals());
-        view.update();
+        SwingUtilities.invokeLater(() -> {
+                    view.setCommandList(cmd);
+                    view.setClassList(type);
+                    view.setTableData(anm);
+                    view.update();
+                });
     }
-
 
 }

@@ -1,7 +1,7 @@
 package view;
 
 import animal.base.Animal;
-import view.controls.AnimalTable;
+import view.controls.AnimalTableModel;
 import view.controls.MenuPanel;
 import view.events.*;
 
@@ -15,7 +15,7 @@ public class SwingView extends View {
 
     private JScrollPane scrollPane;
     private JTable table;
-    private AnimalTable tbModel;
+    private AnimalTableModel tbModel;
 
 
     public SwingView()
@@ -31,7 +31,7 @@ public class SwingView extends View {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         // создаём панели
-        tbModel = new AnimalTable();
+        tbModel = new AnimalTableModel();
         table = new JTable(tbModel);
         menuPanel = new MenuPanel(table);
         scrollPane = new JScrollPane(table);

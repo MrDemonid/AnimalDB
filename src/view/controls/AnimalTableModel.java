@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class AnimalTable extends AbstractTableModel {
+public class AnimalTableModel extends AbstractTableModel {
 
     private ArrayList<String> columnsName;          // названия столбцов
     private ArrayList<Class> columnsClass;          // типы данных столбцов
@@ -15,7 +15,7 @@ public class AnimalTable extends AbstractTableModel {
     private ArrayList<Animal> animals;              // собственно массив строк с данными
 
 
-    public AnimalTable()
+    public AnimalTableModel()
     {
         super();
         setColumnsName("ID", "Вид", "Тип", "Имя", "День рождения", "Команды", "Комментарии");

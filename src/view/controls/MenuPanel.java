@@ -2,7 +2,6 @@ package view.controls;
 
 import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
-import view.controls.unused.TableModel;
 import view.events.*;
 
 import javax.swing.*;
@@ -41,6 +40,11 @@ public class MenuPanel extends JPanel {
     public void setTypes(ArrayList<String> types)
     {
         this.types = types;
+        JComboBoxModel boxModel = (JComboBoxModel) filterType.getModel();
+        boxModel.clear();
+        boxModel.add(types);
+        filterType.setSelectedIndex(0);
+        filterType.updateUI();
     }
 
     public void setCommands(ArrayList<String> commands)
@@ -96,7 +100,10 @@ public class MenuPanel extends JPanel {
         // создаем элементы для вкладки "По виду"
         apply = new JButton("Применить");
         apply.addActionListener(lstApplyType);
-        filterType = new JComboBox<>(types.toArray(new String[0]));
+
+        JComboBoxModel boxModel = new JComboBoxModel();
+        filterType = new JComboBox<>(boxModel);
+        boxModel.add(types);
         tabType.add(filterType, "gap 4, gaptop 10, wrap");
         tabType.add(apply, "south");
 
@@ -177,7 +184,7 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            AnimalTable model = (AnimalTable) table.getModel();
+            AnimalTableModel model = (AnimalTableModel) table.getModel();
             int row = table.getSelectedRow();
             if (row >= 0)
             {
