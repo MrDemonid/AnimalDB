@@ -49,21 +49,11 @@ public class AnimalDB implements IDbCloseable {
         ArrayList<Animal> res = new ArrayList<>();
         while (rs.next())
         {
-            Animal animal;
             int id = rs.getInt("id");
             String nick = rs.getString("nick");
             Date date = rs.getDate("birth_day");
             String type = rs.getString("denotation");
-            switch (type)
-            {
-                case "Cat" -> animal = new Cat(id, nick, date);
-                case "Dog" -> animal = new Dog(id, nick, date);
-                case "Hamster" -> animal = new Hamster(id, nick, date);
-                case "Horse" -> animal = new Horse(id, nick, date);
-                case "Camel" -> animal = new Camel(id, nick, date);
-                case "Donkey" -> animal = new Donkey(id, nick, date);
-                default -> animal = null;
-            }
+            Animal animal = AnimalFactory.createAnimal(type, id, nick, date);
             if (animal != null)
                 res.add(animal);
         }

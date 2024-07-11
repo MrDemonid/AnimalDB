@@ -19,6 +19,17 @@ public class AnimalCommands implements Iterable<String> {
             commands.add(cmd);
     }
 
+    public void addCommand(ArrayList<String> commandList)
+    {
+        if (commandList != null)
+        {
+            for (String command : commandList) {
+                addCommand(command);
+            }
+        }
+    }
+
+
     public ArrayList<String> getCommands() {
         return commands;
     }

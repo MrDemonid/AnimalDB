@@ -3,6 +3,7 @@ package view;
 import animal.base.Animal;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 
 public interface IView {
 
@@ -13,4 +14,8 @@ public interface IView {
     void update();
 
     void done();
+
+    <T extends EventListener> void removeListeners(Class<T> t, T l);
+    <T extends EventListener> void addListener(Class<T> t, T l);
+
 }

@@ -27,23 +27,14 @@ public class Model implements IModel {
 
     public void close()
     {
+        System.out.println(getClass().getSimpleName() + ".close()");
         if (con != null) {
             try {
+                db.close();
                 con.close();
             } catch (SQLException ignored) {}
         }
     }
-
-    public void addAnimal(Animal animal)
-    {
-        db.addAnimal(animal);
-    }
-
-    public void updateAnimal(Animal animal)
-    {
-        db.updateAnimal(animal);
-    }
-
 
 
     private boolean connect()
@@ -101,4 +92,18 @@ public class Model implements IModel {
     {
         return db.getTypesList();
     }
+
+    @Override
+    public void addAnimal(Animal animal)
+    {
+        db.addAnimal(animal);
+    }
+
+    @Override
+    public void updateAnimal(Animal animal)
+    {
+        db.updateAnimal(animal);
+    }
+
+
 }

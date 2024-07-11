@@ -3,11 +3,15 @@ package view;
 import animal.base.Animal;
 import view.controls.AnimalTableModel;
 import view.controls.MenuPanel;
-import view.events.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.EventListener;
 
 public class SwingView extends View {
 
@@ -22,8 +26,8 @@ public class SwingView extends View {
     {
         createViews();
         setVisible(true);
+        addWindowListener(new ViewWindowAdapter());
     }
-
 
     private void createViews()
     {
@@ -38,14 +42,8 @@ public class SwingView extends View {
         getContentPane().add(menuPanel, BorderLayout.WEST);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        // Регистрируем обработчики событий
-        menuPanel.addListener(FilterAllListener.class, doFilterAll);
-        menuPanel.addListener(FilterDateListener.class, doFilterDate);
-        menuPanel.addListener(FilterTypeListener.class, doFilterType);
-        menuPanel.addListener(NewAnimalListener.class, doNewAnimal);
-        menuPanel.addListener(UpdateAnimalListener.class, doUpdateAnimal);
+        addListener(ActionListener.class, doCloseWindow);
     }
-
 
 
     @Override
@@ -75,56 +73,47 @@ public class SwingView extends View {
     @Override
     public void done()
     {
-        System.out.println(getClass().getSimpleName() + "() close");
-        menuPanel.removeListeners(FilterAllListener.class, doFilterAll);
-        menuPanel.removeListeners(FilterDateListener.class, doFilterDate);
-        menuPanel.removeListeners(FilterTypeListener.class, doFilterType);
-        menuPanel.removeListeners(NewAnimalListener.class, doNewAnimal);
-        menuPanel.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
+        System.out.println(getClass().getSimpleName() + ".close()");
+        removeListeners(ActionListener.class, doCloseWindow);
     }
 
 
-        /*===========================================================================
-     *
-     * Реализация слушателей от контролов
-     *
-     ===========================================================================*/
+    public <T extends EventListener> void removeListeners(Class<T> t, T l)
+    {
+        menuPanel.removeListeners(t, l);
+    }
 
-    private final FilterAllListener doFilterAll = new FilterAllListener() {
+    public <T extends EventListener> void addListener(Class<T> t, T l)
+    {
+        menuPanel.addListener(t, l);
+    }
+
+
+    private final ActionListener doCloseWindow = new ActionListener() {
         @Override
-        public void actionPerformed(FilterAllEvent event) {
-            System.out.println("do not filter: " + event);
+        public void actionPerformed(ActionEvent e) {
+            doClose();
         }
     };
 
-    private final FilterDateListener doFilterDate = new FilterDateListener() {
+    private void doClose()
+    {
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    /**
+     *
+     *  Слушатель эвентов окна приложения, для загрузки и сохранения параметров окна
+     *
+     */
+    public class ViewWindowAdapter extends WindowAdapter {
+
         @Override
-        public void actionPerformed(FilterDateEvent event)
+        public void windowClosing(WindowEvent e)
         {
-            System.out.println("do filter by Date: " + event);
+            done();
+            System.exit(0);
         }
-    };
-
-    private final FilterTypeListener doFilterType = new FilterTypeListener() {
-        @Override
-        public void actionPerformed(FilterTypeEvent event) {
-            System.out.println("do filter by Class: " + event);
-        }
-    };
-
-    private final NewAnimalListener doNewAnimal = new NewAnimalListener() {
-        @Override
-        public void actionPerformed(NewAnimalEvent event) {
-            System.out.println("do new Animal: " + event);
-        }
-    };
-
-    private final UpdateAnimalListener doUpdateAnimal = new UpdateAnimalListener() {
-        @Override
-        public void actionPerformed(UpdateAnimalEvent event) {
-            System.out.println("do update Animal: " + event);
-        }
-    };
-
+    }
 
 }

@@ -84,7 +84,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
      * Обновление данных животного
      */
     @Override
-    public boolean updateAnimal(Animal animal)
+    public void updateAnimal(Animal animal)
     {
         try {
             con.setAutoCommit(false);
@@ -92,7 +92,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
             // добавляем команды
             commandsDB.setCommands(animal);
             con.commit();
-            return true;
+
         } catch (NullPointerException | SQLException e) {
             System.out.println("DB error: " + e.getMessage());
             // отменяем транзакцию
@@ -105,14 +105,13 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
                 con.setAutoCommit(true);
             } catch (SQLException ignored) {}
         }
-        return false;
     }
 
     /**
      * Добавление нового животного
      */
     @Override
-    public boolean addAnimal(Animal animal)
+    public void addAnimal(Animal animal)
     {
         try {
             con.setAutoCommit(false);
@@ -120,7 +119,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
             // добавляем команды
             commandsDB.setCommands(animal);
             con.commit();
-            return true;
+
         } catch (NullPointerException | SQLException e) {
             System.out.println("DB error: " + e.getMessage());
             // отменяем транзакцию
@@ -133,12 +132,12 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
                 con.setAutoCommit(true);
             } catch (SQLException ignored) {}
         }
-        return false;
     }
 
     @Override
     public void close()
     {
+        System.out.println(getClass().getSimpleName() + ".close()");
         db.close();
         commandsDB.close();
     }

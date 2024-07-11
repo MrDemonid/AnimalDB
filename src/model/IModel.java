@@ -14,4 +14,7 @@ public interface IModel {
 
     ArrayList<String> getCommandsList();
     ArrayList<String> getTypesList();
+
+    void updateAnimal(Animal animal);
+    void addAnimal(Animal animal);
 }

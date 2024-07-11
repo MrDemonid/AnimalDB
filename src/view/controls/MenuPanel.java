@@ -57,7 +57,7 @@ public class MenuPanel extends JPanel {
         setLayout(new InfoLayout(4));
         addButton("Добавить", lstNewRec);
         addButton("Изменить", lstUpdateRec);
-        addButton("Выход", e -> exit(0));
+        addButton("Выход", e -> fireExit(new ActionEvent(this, 1, "Exit")));
         add(new JSeparator());
         add(new JLabel("Фильтр:"));
 
@@ -168,7 +168,6 @@ public class MenuPanel extends JPanel {
                 if (event.getBirthDay() != null
                         && event.getNick() != null
                         && event.getType() != null
-                        && event.getCommands() != null
                         && !event.getNick().isBlank()
                         && !event.getType().isBlank()
                 )
@@ -199,11 +198,15 @@ public class MenuPanel extends JPanel {
                     if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
                             JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
-                        UpdateAnimalEvent event = new UpdateAnimalEvent(e.getSource(), dlg.getFieldName(), dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
+                        UpdateAnimalEvent event = new UpdateAnimalEvent(e.getSource(),
+                                animal.getId(),
+                                dlg.getFieldName(),
+                                dlg.getFieldType(),
+                                dlg.getFieldDate(),
+                                dlg.getCommands());
                         if (event.getBirthDay() != null
                                 && event.getNick() != null
                                 && event.getType() != null
-                                && event.getCommands() != null
                                 && !event.getNick().isBlank()
                                 && !event.getType().isBlank()
                         )
@@ -265,5 +268,11 @@ public class MenuPanel extends JPanel {
             (listeners[i]).actionPerformed(event);
     }
 
+    private void fireExit(ActionEvent event)
+    {
+        ActionListener[] listeners = listenerList.getListeners(ActionListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
 
 }

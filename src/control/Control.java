@@ -1,8 +1,10 @@
 package control;
 
+import animal.AnimalFactory;
 import animal.base.Animal;
 import model.Model;
 import view.View;
+import view.events.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ public class Control {
 
     Model model;
     View view;
+
+
 
     public Control(Model model, View view)
     {
@@ -24,15 +28,15 @@ public class Control {
             @Override
             public void run() {
                 // Обработка завершения приложения
-                System.out.println("Close program");
-                SwingUtilities.invokeLater(() -> view.done()
-                );
+                done();
+                model.close();
             }
         });
     }
 
     public void run()
     {
+        setListeners();             // Регистрируем обработчики событий
         ArrayList<String> cmd = model.getCommandsList();
         ArrayList<String> type = model.getTypesList();
         ArrayList<Animal> anm = model.getAllAnimals();
@@ -42,7 +46,101 @@ public class Control {
                     view.setClassList(type);
                     view.setTableData(anm);
                     view.update();
-                });
+        });
     }
+
+
+    private void viewSetTable(ArrayList<Animal> list)
+    {
+        SwingUtilities.invokeLater(() -> {
+            view.setTableData(list);
+            view.update();
+        });
+    }
+
+
+
+
+    private void setListeners()
+    {
+        SwingUtilities.invokeLater(() -> {
+            view.addListener(FilterAllListener.class, doFilterAll);
+            view.addListener(FilterDateListener.class, doFilterDate);
+            view.addListener(FilterTypeListener.class, doFilterType);
+            view.addListener(NewAnimalListener.class, doNewAnimal);
+            view.addListener(UpdateAnimalListener.class, doUpdateAnimal);
+        });
+    }
+
+    private void done()
+    {
+        // К этому времени поток с view должен остановиться
+        System.out.println(getClass().getSimpleName() + ".close()");
+        view.removeListeners(FilterAllListener.class, doFilterAll);
+        view.removeListeners(FilterDateListener.class, doFilterDate);
+        view.removeListeners(FilterTypeListener.class, doFilterType);
+        view.removeListeners(NewAnimalListener.class, doNewAnimal);
+        view.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
+    }
+
+    /*===========================================================================
+     *
+     * Реализация слушателей от контролов View
+     *
+     ===========================================================================*/
+
+    private final FilterAllListener doFilterAll = new FilterAllListener() {
+        @Override
+        public void actionPerformed(FilterAllEvent event) {
+            ArrayList<Animal> animals = model.getAllAnimals();
+            viewSetTable(animals);
+        }
+    };
+
+    private final FilterDateListener doFilterDate = new FilterDateListener() {
+        @Override
+        public void actionPerformed(FilterDateEvent event)
+        {
+            ArrayList<Animal> animals = model.getByBirthdays(event.getFrom(), event.getTo());
+            viewSetTable(animals);
+        }
+    };
+
+    private final FilterTypeListener doFilterType = new FilterTypeListener() {
+        @Override
+        public void actionPerformed(FilterTypeEvent event) {
+            ArrayList<Animal> animals = model.getByType(event.getType());
+            viewSetTable(animals);
+        }
+    };
+
+    private final NewAnimalListener doNewAnimal = new NewAnimalListener() {
+        @Override
+        public void actionPerformed(NewAnimalEvent event) {
+            Animal animal = AnimalFactory.createAnimal(event.getType(), 0, event.getNick(), event.getBirthDay(), event.getCommands());
+            if (animal != null)
+            {
+                model.addAnimal(animal);
+                ArrayList<Animal> animals = model.getAllAnimals();
+                viewSetTable(animals);
+            }
+        }
+    };
+
+    private final UpdateAnimalListener doUpdateAnimal = new UpdateAnimalListener() {
+        @Override
+        public void actionPerformed(UpdateAnimalEvent event) {
+            System.out.println("Ctrl: do update Animal: " + event);
+
+            Animal animal = AnimalFactory.createAnimal(event.getType(), event.getId(), event.getNick(), event.getBirthDay(), event.getCommands());
+            if (animal != null)
+            {
+                model.updateAnimal(animal);
+                ArrayList<Animal> animals = model.getAllAnimals();
+                viewSetTable(animals);
+            }
+        }
+    };
+
 
 }

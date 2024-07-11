@@ -16,6 +16,6 @@ public interface IDataBase {
     ArrayList<String> getCommandsList();
     ArrayList<String> getTypesList();
 
-    boolean updateAnimal(Animal animal);
-    boolean addAnimal(Animal animal);
+    void updateAnimal(Animal animal);
+    void addAnimal(Animal animal);
 }
