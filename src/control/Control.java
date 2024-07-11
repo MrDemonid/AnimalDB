@@ -2,6 +2,7 @@ package control;
 
 import animal.AnimalFactory;
 import animal.base.Animal;
+import control.filters.*;
 import model.Model;
 import view.View;
 import view.events.*;
@@ -15,12 +16,16 @@ public class Control {
     Model model;
     View view;
 
+    FilterBase filter;
+    FilterFactory filterFactory;
 
 
     public Control(Model model, View view)
     {
         this.model = model;
         this.view = view;
+        this.filterFactory = new FilterFactory(model);
+        this.filter = filterFactory.getFilter();        // по умолчанию фильтр отсутствует
 
         // Вешаем обработчик на закрытие программы
         Runtime.getRuntime().addShutdownHook(new Thread()
@@ -50,8 +55,10 @@ public class Control {
     }
 
 
-    private void viewSetTable(ArrayList<Animal> list)
+    private void viewSetTable()
     {
+        ArrayList<Animal> list = filter.getData();
+
         SwingUtilities.invokeLater(() -> {
             view.setTableData(list);
             view.update();
@@ -92,8 +99,8 @@ public class Control {
     private final FilterAllListener doFilterAll = new FilterAllListener() {
         @Override
         public void actionPerformed(FilterAllEvent event) {
-            ArrayList<Animal> animals = model.getAllAnimals();
-            viewSetTable(animals);
+            filter = filterFactory.getFilter();
+            viewSetTable();
         }
     };
 
@@ -101,16 +108,16 @@ public class Control {
         @Override
         public void actionPerformed(FilterDateEvent event)
         {
-            ArrayList<Animal> animals = model.getByBirthdays(event.getFrom(), event.getTo());
-            viewSetTable(animals);
+            filter = filterFactory.getFilter(event.getFrom(), event.getTo());
+            viewSetTable();
         }
     };
 
     private final FilterTypeListener doFilterType = new FilterTypeListener() {
         @Override
         public void actionPerformed(FilterTypeEvent event) {
-            ArrayList<Animal> animals = model.getByType(event.getType());
-            viewSetTable(animals);
+            filter = filterFactory.getFilter(event.getType());
+            viewSetTable();
         }
     };
 
@@ -121,8 +128,7 @@ public class Control {
             if (animal != null)
             {
                 model.addAnimal(animal);
-                ArrayList<Animal> animals = model.getAllAnimals();
-                viewSetTable(animals);
+                viewSetTable();
             }
         }
     };
@@ -136,8 +142,7 @@ public class Control {
             if (animal != null)
             {
                 model.updateAnimal(animal);
-                ArrayList<Animal> animals = model.getAllAnimals();
-                viewSetTable(animals);
+                viewSetTable();
             }
         }
     };
