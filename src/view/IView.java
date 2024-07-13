@@ -5,9 +5,14 @@ import animal.base.Animal;
 import java.util.ArrayList;
 import java.util.EventListener;
 
+/**
+ * Интерфейс взаимодействия Представления с "внешним миром"
+ * т.е. с Контроллером
+ */
 public interface IView {
 
     void setCommandList(ArrayList<String> commands);    // список команд животных
+    void setTypeList(ArrayList<String> typeList);       // список видов животных
     void setClassList(ArrayList<String> classList);     // список видов животных
     void setTableData(ArrayList<Animal> animals);       // список данных о животных
     void setInfo(String text);                          // какая то информация для юзера

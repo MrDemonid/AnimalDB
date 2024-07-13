@@ -1,6 +1,7 @@
 package model;
 
 import animal.base.Animal;
+import animal.base.AnimalClass;
 import model.dao.DatabaseModel;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,14 +38,13 @@ public class Model implements IModel {
     }
 
 
-    private boolean connect()
+    private void connect()
     {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 
             con = DriverManager.getConnection(url, user, password);
             db = new DatabaseModel(con);
-            return true;
         } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {
             System.out.println("no sync MySQL driver");
@@ -52,7 +52,6 @@ public class Model implements IModel {
         } catch (SQLException e) {
             System.out.println("error connect to database");
         }
-        return false;
     }
 
 
@@ -76,9 +75,16 @@ public class Model implements IModel {
     }
 
     @Override
-    public ArrayList<Animal> getById(int id)
+    public ArrayList<Animal> getByClass(AnimalClass classes)
     {
-        return db.getById(id);
+        ArrayList<Animal> animals = db.getAll();
+        ArrayList<Animal> res = new ArrayList<>();
+        for (Animal animal : animals)
+        {
+            if (animal.getAnimalClass() == classes)
+                res.add(animal);
+        }
+        return res;
     }
 
     @Override

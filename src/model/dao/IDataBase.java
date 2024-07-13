@@ -5,7 +5,9 @@ import animal.base.Animal;
 import java.util.ArrayList;
 import java.util.Date;
 
-
+/**
+ * Интерфейс между менеджером БД и самой БД (низкоуровневых классов)
+ */
 public interface IDataBase {
 
     ArrayList<Animal> getAll();

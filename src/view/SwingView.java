@@ -53,9 +53,15 @@ public class SwingView extends View {
     }
 
     @Override
+    public void setTypeList(ArrayList<String> typeList)
+    {
+        menuPanel.setTypes(typeList);
+    }
+
+    @Override
     public void setClassList(ArrayList<String> classList)
     {
-        menuPanel.setTypes(classList);
+        menuPanel.setClasses(classList);
     }
 
     @Override

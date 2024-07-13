@@ -2,6 +2,7 @@ package control;
 
 import animal.AnimalFactory;
 import animal.base.Animal;
+import animal.base.AnimalClass;
 import control.filters.*;
 import model.Model;
 import view.View;
@@ -9,6 +10,7 @@ import view.events.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Control {
@@ -44,10 +46,11 @@ public class Control {
         setListeners();             // Регистрируем обработчики событий
         ArrayList<String> cmd = model.getCommandsList();
         ArrayList<String> type = model.getTypesList();
-
+        ArrayList<String> classes = new ArrayList<>(Arrays.asList(AnimalClass.Pets.toString(), AnimalClass.Packs.toString()));
         SwingUtilities.invokeLater(() -> {
                     view.setCommandList(cmd);
-                    view.setClassList(type);
+                    view.setTypeList(type);
+                    view.setClassList(classes);
         });
         viewSetTable();
     }
@@ -70,6 +73,7 @@ public class Control {
             view.addListener(FilterAllListener.class, doFilterAll);
             view.addListener(FilterDateListener.class, doFilterDate);
             view.addListener(FilterTypeListener.class, doFilterType);
+            view.addListener(FilterClassListener.class, doFilterClass);
             view.addListener(NewAnimalListener.class, doNewAnimal);
             view.addListener(UpdateAnimalListener.class, doUpdateAnimal);
         });
@@ -82,6 +86,7 @@ public class Control {
         view.removeListeners(FilterAllListener.class, doFilterAll);
         view.removeListeners(FilterDateListener.class, doFilterDate);
         view.removeListeners(FilterTypeListener.class, doFilterType);
+        view.removeListeners(FilterClassListener.class, doFilterClass);
         view.removeListeners(NewAnimalListener.class, doNewAnimal);
         view.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
     }
@@ -114,6 +119,18 @@ public class Control {
         public void actionPerformed(FilterTypeEvent event) {
             filter = filterFactory.getFilter(event.getType());
             viewSetTable();
+        }
+    };
+
+    private final FilterClassListener doFilterClass = new FilterClassListener() {
+        @Override
+        public void actionPerformed(FilterClassEvent event) {
+            AnimalClass cl = AnimalClass.getClass(event.getClasses());
+            if (cl != null)
+            {
+                filter = filterFactory.getFilter(cl);
+                viewSetTable();
+            }
         }
     };
 

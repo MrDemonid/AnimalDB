@@ -25,7 +25,8 @@ public class MenuPanel extends JPanel {
     // данные фильтров вывода
     JTextField filterDateFrom;
     JTextField filterDateTo;
-    JComboBox filterType;
+    JComboBox<String> filterType;
+    JComboBox<String> filterClass;
 
     // лейбл для вывода краткой инфы
     JLabel labelInfo;
@@ -44,16 +45,17 @@ public class MenuPanel extends JPanel {
     public void setTypes(ArrayList<String> types)
     {
         this.types = types;
-        JComboBoxModel boxModel = (JComboBoxModel) filterType.getModel();
-        boxModel.clear();
-        boxModel.add(types);
-        filterType.setSelectedIndex(0);
-        filterType.updateUI();
+        fillComboBox(filterType, types);
     }
 
     public void setCommands(ArrayList<String> commands)
     {
         this.commands = commands;
+    }
+
+    public void setClasses(ArrayList<String> classes)
+    {
+        fillComboBox(filterClass, classes);
     }
 
     public void setInfo(String text)
@@ -70,6 +72,7 @@ public class MenuPanel extends JPanel {
         add(new JSeparator());
         add(new JLabel("Фильтр:"));
         add(addTabPanel());
+        add(new JSeparator());
         labelInfo = new JLabel("Info");
         add(labelInfo);
     }
@@ -81,6 +84,16 @@ public class MenuPanel extends JPanel {
         add(btn);
     }
 
+    private void fillComboBox(JComboBox<String> box, ArrayList<String> sources)
+    {
+        JComboBoxModel boxModel = (JComboBoxModel) box.getModel();
+        boxModel.clear();
+        boxModel.add(sources);
+        box.setSelectedIndex(0);
+        box.updateUI();
+    }
+
+
     /*
      * Создаёт панель вкладок для фильтра вывода данных с БД
      */
@@ -89,6 +102,7 @@ public class MenuPanel extends JPanel {
         JPanel tabAll = new JPanel(new MigLayout("fill"));
         JPanel tabDate = new JPanel(new MigLayout("fill"));
         JPanel tabType = new JPanel(new MigLayout("fill"));
+        JPanel tabClass = new JPanel(new MigLayout("fill"));
 
         // создаем элементы для вкладки "Все"
         JButton apply = new JButton("Применить");
@@ -109,18 +123,28 @@ public class MenuPanel extends JPanel {
         // создаем элементы для вкладки "По виду"
         apply = new JButton("Применить");
         apply.addActionListener(lstApplyType);
-
         JComboBoxModel boxModel = new JComboBoxModel();
         filterType = new JComboBox<>(boxModel);
         boxModel.add(types);
         tabType.add(filterType, "gap 4, gaptop 10, wrap");
         tabType.add(apply, "south");
 
+        // создаем вкладку "По классу"
+        apply = new JButton("Применить");
+        apply.addActionListener(lstApplyClass);
+        boxModel = new JComboBoxModel();
+        filterClass = new JComboBox<>(boxModel);
+        boxModel.add(new ArrayList<>());
+        tabClass.add(filterClass, "gap 4, gaptop 10, wrap");
+        tabClass.add(apply, "south");
+
+
         // собираем панель вкладок
         JTabbedPane pane = new JTabbedPane();
         pane.addTab("Все", tabAll);
-        pane.addTab("По дате", tabDate);
-        pane.addTab("По типу", tabType);
+        pane.addTab("Дата", tabDate);
+        pane.addTab("Вид", tabType);
+        pane.addTab("Класс", tabClass);
         return pane;
     }
 
@@ -157,6 +181,19 @@ public class MenuPanel extends JPanel {
             String s = (String) filterType.getSelectedItem();
             if (s != null && !s.isBlank())
                 fireFilterType(new FilterTypeEvent(e.getSource(), s));
+        }
+    };
+
+    /*
+     * слушатель кнопки "Применить" для фильтра "По классу"
+     */
+    ActionListener lstApplyClass = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            String s = (String) filterClass.getSelectedItem();
+            if (s != null && !s.isBlank())
+                fireFilterClass(new FilterClassEvent(e.getSource(), s));
         }
     };
 
@@ -259,6 +296,13 @@ public class MenuPanel extends JPanel {
     private void fireFilterType(FilterTypeEvent event)
     {
         FilterTypeListener[] listeners = listenerList.getListeners(FilterTypeListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
+    private void fireFilterClass(FilterClassEvent event)
+    {
+        FilterClassListener[] listeners = listenerList.getListeners(FilterClassListener.class);
         for (int i = listeners.length-1; i>=0; i--)
             (listeners[i]).actionPerformed(event);
     }
