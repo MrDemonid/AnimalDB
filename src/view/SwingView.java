@@ -1,7 +1,7 @@
 package view;
 
 import animal.base.Animal;
-import view.controls.AnimalTableModel;
+import view.controls.models.AnimalTableModel;
 import view.controls.MenuPanel;
 
 import javax.swing.*;
@@ -62,6 +62,12 @@ public class SwingView extends View {
     public void setTableData(ArrayList<Animal> animals)
     {
         tbModel.addSource(animals);
+    }
+
+    @Override
+    public void setInfo(String text)
+    {
+        menuPanel.setInfo(text);
     }
 
     @Override

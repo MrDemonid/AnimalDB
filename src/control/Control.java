@@ -44,29 +44,25 @@ public class Control {
         setListeners();             // Регистрируем обработчики событий
         ArrayList<String> cmd = model.getCommandsList();
         ArrayList<String> type = model.getTypesList();
-        ArrayList<Animal> anm = model.getAllAnimals();
 
         SwingUtilities.invokeLater(() -> {
                     view.setCommandList(cmd);
                     view.setClassList(type);
-                    view.setTableData(anm);
-                    view.update();
         });
+        viewSetTable();
     }
-
 
     private void viewSetTable()
     {
-        ArrayList<Animal> list = filter.getData();
+        ArrayList<Animal> animals = filter.getData();
+        int count = animals.size();
 
         SwingUtilities.invokeLater(() -> {
-            view.setTableData(list);
+            view.setTableData(animals);
+            view.setInfo("Всего: " + count + " животных");
             view.update();
         });
     }
-
-
-
 
     private void setListeners()
     {
@@ -81,7 +77,7 @@ public class Control {
 
     private void done()
     {
-        // К этому времени поток с view должен остановиться
+        // К этому времени поток с view должен остановиться, но само представление еще не уничтожено
         System.out.println(getClass().getSimpleName() + ".close()");
         view.removeListeners(FilterAllListener.class, doFilterAll);
         view.removeListeners(FilterDateListener.class, doFilterDate);
@@ -136,8 +132,6 @@ public class Control {
     private final UpdateAnimalListener doUpdateAnimal = new UpdateAnimalListener() {
         @Override
         public void actionPerformed(UpdateAnimalEvent event) {
-            System.out.println("Ctrl: do update Animal: " + event);
-
             Animal animal = AnimalFactory.createAnimal(event.getType(), event.getId(), event.getNick(), event.getBirthDay(), event.getCommands());
             if (animal != null)
             {

@@ -2,6 +2,9 @@ package view.controls;
 
 import animal.base.Animal;
 import net.miginfocom.swing.MigLayout;
+import view.controls.models.AnimalTableModel;
+import view.controls.models.InfoLayout;
+import view.controls.models.JComboBoxModel;
 import view.events.*;
 
 import javax.swing.*;
@@ -10,8 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.EventListener;
-
-import static java.lang.System.exit;
 
 public class MenuPanel extends JPanel {
 
@@ -25,6 +26,9 @@ public class MenuPanel extends JPanel {
     JTextField filterDateFrom;
     JTextField filterDateTo;
     JComboBox filterType;
+
+    // лейбл для вывода краткой инфы
+    JLabel labelInfo;
 
 
     public MenuPanel(JTable table)
@@ -52,17 +56,22 @@ public class MenuPanel extends JPanel {
         this.commands = commands;
     }
 
+    public void setInfo(String text)
+    {
+        labelInfo.setText(text);
+    }
+
     private void init()
     {
-        setLayout(new InfoLayout(4));
+        setLayout(new InfoLayout(8));
         addButton("Добавить", lstNewRec);
         addButton("Изменить", lstUpdateRec);
         addButton("Выход", e -> fireExit(new ActionEvent(this, 1, "Exit")));
         add(new JSeparator());
         add(new JLabel("Фильтр:"));
-
         add(addTabPanel());
-
+        labelInfo = new JLabel("Info");
+        add(labelInfo);
     }
 
     private void addButton(String title, ActionListener listener)

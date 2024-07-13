@@ -1,4 +1,4 @@
-package view.controls;
+package view.controls.models;
 
 import animal.base.Animal;
 
