@@ -10,8 +10,10 @@ import java.util.ArrayList;
 
 public class CommandsDB implements IDbCloseable {
 
-    static final String sqlGetAll =  "SELECT id, denotation FROM cmd_info;";
-    static final String sqlGetById = "SELECT denotation FROM cmd_info JOIN cmd_list ON cmd_list.cmd_id = cmd_info.id JOIN animals ON animals.id = cmd_list.anm_id WHERE animals.id = ?;";
+    static final String sqlGetAll =  "SELECT id, denotation FROM commands;";
+    static final String sqlGetById = "SELECT c.denotation FROM commands c " +
+                                     "JOIN cmd_list cl ON cl.cmd_id = c.id " +
+                                     "WHERE cl.anm_id = ?;";
 
     // команды без предварительной компиляции
     static final String sqlDelete =  "DELETE FROM cmd_list WHERE anm_id=?;";

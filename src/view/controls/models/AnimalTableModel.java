@@ -18,8 +18,8 @@ public class AnimalTableModel extends AbstractTableModel {
     public AnimalTableModel()
     {
         super();
-        setColumnsName("ID", "Вид", "Тип", "Имя", "День рождения", "Команды", "Комментарии");
-        setColumnsClass(Integer.class, String.class, String.class, String.class, Date.class, String.class, String.class);
+        setColumnsName("ID", "Вид", "Тип", "Имя", "День рождения", "Пол", "Команды", "Комментарии");
+        setColumnsClass(Integer.class, String.class, String.class, String.class, Date.class, String.class, String.class, String.class);
         animals = new ArrayList<>();
     }
 
@@ -150,8 +150,9 @@ public class AnimalTableModel extends AbstractTableModel {
                 case 2 -> animal.getAnimalClass();
                 case 3 -> animal.getNickName();
                 case 4 -> animal.getBirthDay();
-                case 5 -> animal.getCommands();
-                case 6 -> animal.getComments();
+                case 5 -> animal.getSex();
+                case 6 -> animal.getCommands();
+                case 7 -> animal.getComments();
                 default -> "";
             };
         } catch (IndexOutOfBoundsException e)

@@ -137,7 +137,7 @@ public class Control {
     private final NewAnimalListener doNewAnimal = new NewAnimalListener() {
         @Override
         public void actionPerformed(NewAnimalEvent event) {
-            Animal animal = AnimalFactory.createAnimal(event.getType(), 0, event.getNick(), event.getBirthDay(), event.getCommands());
+            Animal animal = AnimalFactory.createAnimal(event.getType(), 0, event.getNick(), event.getBirthDay(), event.getSex(), event.getCommands());
             if (animal != null)
             {
                 model.addAnimal(animal);
@@ -149,7 +149,7 @@ public class Control {
     private final UpdateAnimalListener doUpdateAnimal = new UpdateAnimalListener() {
         @Override
         public void actionPerformed(UpdateAnimalEvent event) {
-            Animal animal = AnimalFactory.createAnimal(event.getType(), event.getId(), event.getNick(), event.getBirthDay(), event.getCommands());
+            Animal animal = AnimalFactory.createAnimal(event.getType(), event.getId(), event.getNick(), event.getBirthDay(), event.getSex(), event.getCommands());
             if (animal != null)
             {
                 model.updateAnimal(animal);

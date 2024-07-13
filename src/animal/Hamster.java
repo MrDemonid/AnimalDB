@@ -1,14 +1,15 @@
 package animal;
 
 import animal.base.AnimalPets;
+import animal.base.AnimalSex;
 
 import java.util.Date;
 
 public class Hamster extends AnimalPets {
 
-    public Hamster(int id, String nickName, Date birthDay, String comments, AnimalCommands commands)
+    public Hamster(int id, String nickName, Date birthDay, AnimalSex sex, String comments, AnimalCommands commands)
     {
-        super(id, nickName, birthDay, comments, commands);
+        super(id, nickName, birthDay, sex, comments, commands);
     }
 
     public Hamster(int id, String nickName, Date birthDay)

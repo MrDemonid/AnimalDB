@@ -1,5 +1,6 @@
 package view.controls;
 
+import animal.base.AnimalSex;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -17,6 +18,11 @@ public class InputDialog extends JPanel {
     private JList<String> listTypes;
     private JList<String> listCommands;
 
+
+    public AnimalSex getSex()
+    {
+        return AnimalSex.Unknown;
+    }
 
     public InputDialog(ArrayList<String> commands, ArrayList<String> types)
     {

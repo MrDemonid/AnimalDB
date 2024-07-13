@@ -8,16 +8,18 @@ public abstract class Animal {
     private int id;
     private String nickName;
     private Date birthDay;
+    private AnimalSex sex;
     private String comments;
     private AnimalCommands commands;
 
     private AnimalClass animalClass;
 
-    public Animal(int id, String nickName, Date birthDay, String comments, AnimalCommands commands, AnimalClass animalClass)
+    public Animal(int id, String nickName, Date birthDay, AnimalSex sex, String comments, AnimalCommands commands, AnimalClass animalClass)
     {
         this.id = id;
         this.nickName = nickName;
         this.birthDay = birthDay;
+        this.sex = sex;
         this.comments = comments;
         this.commands = commands;
         this.animalClass = animalClass;
@@ -39,6 +41,11 @@ public abstract class Animal {
 
     public Date getBirthDay() {
         return birthDay;
+    }
+
+    public AnimalSex getSex()
+    {
+        return sex;
     }
 
     public String getComments() {

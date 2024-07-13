@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class TypesDB implements IDbCloseable {
 
-    static final String sqlGetAll =  "SELECT id, denotation FROM anm_type;";
+    static final String sqlGetAll =  "SELECT id, denotation FROM types;";
 
     private final Connection con;
 

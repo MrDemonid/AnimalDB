@@ -2,6 +2,7 @@ package model.dao;
 
 import animal.*;
 import animal.base.Animal;
+import animal.base.AnimalSex;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,29 +15,47 @@ public class AnimalDB implements IDbCloseable {
     static final String sqlInsAnim =    "INSERT INTO animals (type_id, data_id) VALUES ((SELECT id FROM anm_type WHERE denotation = ?), ?);";
 
 
-    static final String sqlGetAll =     "SELECT animals.id, anm_data.nick, anm_data.birth_day, anm_type.denotation FROM anm_data " +
-                                        "JOIN animals ON animals.data_id = anm_data.id " +
-                                        "JOIN anm_type ON animals.type_id = anm_type.id;";
-    static final String sqlGetByBirthdays = "SELECT animals.id,anm_data.nick, anm_data.birth_day, anm_type.denotation " +
-                                        "FROM anm_data " +
-                                        "JOIN animals ON animals.data_id = anm_data.id " +
-                                        "JOIN anm_type ON animals.type_id = anm_type.id " +
-                                        "WHERE anm_data.birth_day BETWEEN ? AND ?;";
-    static final String sqlGetByType =  "SELECT animals.id, anm_data.nick, anm_data.birth_day, anm_type.denotation FROM anm_data " +
-                                        "JOIN animals ON animals.data_id = anm_data.id " +
-                                        "JOIN anm_type ON animals.type_id = anm_type.id " +
-                                        "WHERE animals.type_id = (SELECT anm_type.id FROM anm_type WHERE denotation = ?);";
-    static final String sqlGetById =    "SELECT animals.id, anm_data.nick, anm_data.birth_day, anm_type.denotation FROM anm_data " +
-                                        "JOIN animals ON animals.data_id = anm_data.id " +
-                                        "JOIN anm_type ON animals.type_id = anm_type.id " +
-                                        "WHERE animals.id = ?;";
+    static final String sqlGetAll =     "SELECT animals.id, animals.nick, animals.birth_day, types.denotation AS 'type', sex.denotation AS 'sex' " +
+                                        "FROM animals " +
+                                        "JOIN typ_list ON typ_list.anm_id = animals.id " +
+                                        "JOIN sex_list ON sex_list.anm_id = animals.id " +
+                                        "JOIN types ON typ_list.typ_id = types.id " +
+                                        "JOIN sex ON sex_list.sex_id = sex.id " +
+                                        "ORDER BY animals.id;";
+    static final String sqlGetByBirthdays = "SELECT animals.id, animals.nick, animals.birth_day, types.denotation AS 'type', sex.denotation AS 'sex' " +
+                                        "FROM animals " +
+                                        "JOIN typ_list ON typ_list.anm_id = animals.id " +
+                                        "JOIN sex_list ON sex_list.anm_id = animals.id " +
+                                        "JOIN types ON typ_list.typ_id = types.id " +
+                                        "JOIN sex ON sex_list.sex_id = sex.id " +
+                                        "WHERE animals.birth_day BETWEEN ? AND ? " +
+                                        "ORDER BY animals.birth_day;";
+
+    static final String sqlGetByType =  "SELECT animals.id, animals.nick, animals.birth_day, types.denotation AS 'type', sex.denotation AS 'sex' " +
+                                        "FROM animals " +
+                                        "JOIN typ_list ON typ_list.anm_id = animals.id " +
+                                        "JOIN sex_list ON sex_list.anm_id = animals.id " +
+                                        "JOIN types ON typ_list.typ_id = types.id " +
+                                        "JOIN sex ON sex_list.sex_id = sex.id " +
+                                        "WHERE types.denotation = ? " +
+                                        "ORDER BY animals.id;";
+
+
+    static final String sqlGetBySex =   "SELECT animals.id, animals.nick, animals.birth_day, types.denotation AS 'type', sex.denotation AS 'sex' " +
+                                        "FROM animals " +
+                                        "JOIN typ_list ON typ_list.anm_id = animals.id " +
+                                        "JOIN sex_list ON sex_list.anm_id = animals.id " +
+                                        "JOIN types ON typ_list.typ_id = types.id " +
+                                        "JOIN sex ON sex_list.sex_id = sex.id " +
+                                        "WHERE sex.denotation = ? " +
+                                        "ORDER BY animals.id;";
 
     Connection con;
 
     PreparedStatement stGetAll;
     PreparedStatement stGetByBirthdays;
     PreparedStatement stGetByType;
-    PreparedStatement stGetById;
+    PreparedStatement stGetBySex;
 
     public AnimalDB(Connection con)
     {
@@ -52,8 +71,9 @@ public class AnimalDB implements IDbCloseable {
             int id = rs.getInt("id");
             String nick = rs.getString("nick");
             Date date = rs.getDate("birth_day");
-            String type = rs.getString("denotation");
-            Animal animal = AnimalFactory.createAnimal(type, id, nick, date);
+            String ssex = rs.getString("sex");
+            String type = rs.getString("type");
+            Animal animal = AnimalFactory.createAnimal(type, id, nick, date, AnimalSex.getSex(ssex));
             if (animal != null)
                 res.add(animal);
         }
@@ -109,22 +129,20 @@ public class AnimalDB implements IDbCloseable {
     }
 
     /**
-     * Выборка животных по id
-     * @param id уникальный идентификатор животного
-     * @return в целях унификации возвращается массив, с единственным элементом (или null - если была ошибка)
+     * Выборка животных по полу
+     * @param sex пол животных ('male', 'female')
      */
-    public ArrayList<Animal> getById(int id)
+    public ArrayList<Animal> getBySex(String sex)
     {
         try {
-            stGetById.setInt(1, id);
-            ResultSet rs = stGetById.executeQuery();
+            stGetBySex.setString(1, sex);
+            ResultSet rs = stGetBySex.executeQuery();
             return makeResult(rs);
         } catch (NullPointerException | SQLException e) {
             System.out.println(getClass().getSimpleName() + " error: " + e.getMessage());
             return null;
         }
     }
-
 
     /**
      * Обновляет данные в БД (таблица anm_data)
@@ -193,7 +211,7 @@ public class AnimalDB implements IDbCloseable {
         stGetAll = closeStatement(stGetAll);
         stGetByBirthdays = closeStatement(stGetByBirthdays);
         stGetByType = closeStatement(stGetByType);
-        stGetById = closeStatement(stGetById);
+        stGetBySex = closeStatement(stGetBySex);
     }
 
     private void prepareStatements()
@@ -202,8 +220,9 @@ public class AnimalDB implements IDbCloseable {
             stGetAll = con.prepareStatement(sqlGetAll);
             stGetByBirthdays = con.prepareStatement(sqlGetByBirthdays);
             stGetByType = con.prepareStatement(sqlGetByType);
-            stGetById = con.prepareStatement(sqlGetById);
+            stGetBySex = con.prepareStatement(sqlGetBySex);
         } catch (SQLException e) {
+            System.out.println("Prepare error: " + e.getMessage());
             close();
         }
     }

@@ -1,6 +1,7 @@
 package model.dao;
 
 import animal.base.Animal;
+import animal.base.AnimalSex;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +14,7 @@ public interface IDataBase {
     ArrayList<Animal> getAll();
     ArrayList<Animal> getByBirthdays(Date from, Date to);
     ArrayList<Animal> getByType(String type);
-    ArrayList<Animal> getById(int id);
+    ArrayList<Animal> getBySex(AnimalSex sex);
 
     ArrayList<String> getCommandsList();
     ArrayList<String> getTypesList();

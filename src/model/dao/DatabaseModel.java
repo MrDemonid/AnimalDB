@@ -1,6 +1,7 @@
 package model.dao;
 
 import animal.base.Animal;
+import animal.base.AnimalSex;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -63,9 +64,9 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
     }
 
     @Override
-    public ArrayList<Animal> getById(int id)
+    public ArrayList<Animal> getBySex(AnimalSex sex)
     {
-        ArrayList<Animal> res = db.getById(id);
+        ArrayList<Animal> res = db.getBySex(sex.toString());
         return makeResult(res);
     }
 

@@ -210,7 +210,7 @@ public class MenuPanel extends JPanel {
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
             {
-                NewAnimalEvent event = new NewAnimalEvent(e.getSource(), dlg.getFieldName(), dlg.getFieldType(), dlg.getFieldDate(), dlg.getCommands());
+                NewAnimalEvent event = new NewAnimalEvent(e.getSource(), dlg.getFieldName(), dlg.getFieldType(), dlg.getFieldDate(), dlg.getSex(), dlg.getCommands());
                 if (event.getBirthDay() != null
                         && event.getNick() != null
                         && event.getType() != null
@@ -249,6 +249,7 @@ public class MenuPanel extends JPanel {
                                 dlg.getFieldName(),
                                 dlg.getFieldType(),
                                 dlg.getFieldDate(),
+                                dlg.getSex(),
                                 dlg.getCommands());
                         if (event.getBirthDay() != null
                                 && event.getNick() != null

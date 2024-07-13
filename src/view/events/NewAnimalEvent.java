@@ -1,5 +1,7 @@
 package view.events;
 
+import animal.base.AnimalSex;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -8,10 +10,11 @@ public class NewAnimalEvent extends SimpleDateEvent {
     private String nick;
     private Date birthDay;
     private String type;
+    private AnimalSex sex;
     private ArrayList<String> commands;
     protected int id;
 
-    public NewAnimalEvent(Object source, String nick, String type, String date, ArrayList<String> commands)
+    public NewAnimalEvent(Object source, String nick, String type, String date, AnimalSex sex, ArrayList<String> commands)
     {
         super(source);
         this.nick = nick;
@@ -39,6 +42,11 @@ public class NewAnimalEvent extends SimpleDateEvent {
         return birthDay;
     }
 
+    public AnimalSex getSex()
+    {
+        return sex;
+    }
+
     public ArrayList<String> getCommands()
     {
         return commands;
@@ -46,12 +54,13 @@ public class NewAnimalEvent extends SimpleDateEvent {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() +
-                "{" +
+        return "NewAnimalEvent{" +
                 "nick='" + nick + '\'' +
                 ", birthDay=" + birthDay +
                 ", type='" + type + '\'' +
+                ", sex=" + sex +
                 ", commands=" + commands +
+                ", id=" + id +
                 '}';
     }
 }
