@@ -1,8 +1,6 @@
 import control.Control;
 import model.Model;
 import view.RinnableView;
-import view.SwingView;
-import view.View;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;

@@ -20,6 +20,7 @@ public class NewAnimalEvent extends SimpleDateEvent {
         this.nick = nick;
         this.type = type;
         this.birthDay = strToDate(date);
+        this.sex = sex;
         this.commands = commands;
         this.id = 0;
     }

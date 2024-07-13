@@ -125,7 +125,10 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
     {
         try {
             con.setAutoCommit(false);
-            db.addAnimal(animal);
+            int anm_id = db.addAnimal(animal);
+            animal.setId(anm_id);
+            typesDB.insertAnimal(anm_id, animal.getClass().getSimpleName());
+            sexDB.insertAnimal(anm_id, animal.getSex().name());
             // добавляем команды
             commandsDB.setCommands(animal);
             con.commit();

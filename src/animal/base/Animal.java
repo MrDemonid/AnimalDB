@@ -71,7 +71,7 @@ public abstract class Animal {
 
     @Override
     public String toString() {
-        return String.format("[%d] (%s: '%s') '%s', %te-%tm-%tY, '%s'",
-                            id, animalClass.toString(), getClass().getSimpleName(), nickName, birthDay, birthDay, birthDay, commands);
+        return String.format("[%d] (%s: '%s') '%s', %te-%tm-%tY, %s, '%s'",
+                            id, animalClass.toString(), getClass().getSimpleName(), nickName, birthDay, birthDay, birthDay, sex, commands);
     }
 }

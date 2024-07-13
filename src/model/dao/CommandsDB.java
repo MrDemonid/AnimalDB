@@ -11,13 +11,13 @@ import java.util.ArrayList;
 public class CommandsDB implements IDbCloseable {
 
     static final String sqlGetAll =  "SELECT id, denotation FROM commands;";
-    static final String sqlGetById = "SELECT c.denotation FROM commands c " +
-                                     "JOIN cmd_list cl ON cl.cmd_id = c.id " +
-                                     "WHERE cl.anm_id = ?;";
+    static final String sqlGetById = "SELECT commands.denotation FROM commands " +
+                                     "JOIN cmd_list ON cmd_list.cmd_id = commands.id " +
+                                     "WHERE cmd_list.anm_id = ?;";
 
     // команды без предварительной компиляции
     static final String sqlDelete =  "DELETE FROM cmd_list WHERE anm_id=?;";
-    static final String sqlInsCmd =  "INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM cmd_info WHERE denotation = ?;";
+    static final String sqlInsCmd =  "INSERT INTO cmd_list (anm_id, cmd_id) SELECT ?, id FROM commands WHERE denotation = ?;";
 
     private final Connection con;
     private PreparedStatement stById;
@@ -42,7 +42,7 @@ public class CommandsDB implements IDbCloseable {
      */
     public ArrayList<String> getCommandsList()
     {
-        try (PreparedStatement st_cmd = con.prepareStatement(sqlGetAll);)
+        try (PreparedStatement st_cmd = con.prepareStatement(sqlGetAll))
         {
             ResultSet rs = st_cmd.executeQuery();
             return makeResult(rs);
@@ -55,7 +55,7 @@ public class CommandsDB implements IDbCloseable {
     public void setCommands(Animal animal) throws SQLException
     {
         try (PreparedStatement st_cmd = con.prepareStatement(sqlInsCmd);
-             PreparedStatement st_del = con.prepareStatement(sqlDelete);)
+             PreparedStatement st_del = con.prepareStatement(sqlDelete))
         {
             // удаляем старые данные из cmd_list
             st_del.setInt(1, animal.getId());

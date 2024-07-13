@@ -22,11 +22,6 @@ public class InputDialog extends JPanel {
     private JList<String> listCommands;
 
 
-    public AnimalSex getSex()
-    {
-        return AnimalSex.Unknown;
-    }
-
     public InputDialog(ArrayList<String> commands, ArrayList<String> types, ArrayList<String> sex)
     {
         setLayout(new MigLayout());
@@ -61,6 +56,11 @@ public class InputDialog extends JPanel {
     public String getFieldType()
     {
         return listTypes.getSelectedValue();
+    }
+
+    public String getFieldSex()
+    {
+        return listSex.getSelectedValue();
     }
 
     private void setDatas(String nick, String type, Date birthDay, ArrayList<String> commands, String sex)

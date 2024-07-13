@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class SexDB implements IDbCloseable {
 
     static final String sqlGetSex =  "SELECT id, denotation FROM sex;";
+    static final String sqlInsSex =  "INSERT INTO sex_list (anm_id, sex_id) VALUES (?, (SELECT id FROM sex WHERE denotation = ?));";
+
 
     private final Connection con;
 
@@ -29,6 +31,20 @@ public class SexDB implements IDbCloseable {
         return null;
     }
 
+    /**
+     * Добавляет ссылку на животное (animals) в таблицу typ_list
+     * @param animal_id Идентификатор животного в таблицу animals
+     * @param sex       Пол животного (Male, Female, Unknown)
+     */
+    public void insertAnimal(int animal_id, String sex) throws SQLException
+    {
+        try (PreparedStatement st_cmd = con.prepareStatement(sqlInsSex))
+        {
+            st_cmd.setInt(1, animal_id);
+            st_cmd.setString(2, sex);
+            st_cmd.executeUpdate();
+        }
+    }
 
     private ArrayList<String> makeResult(ResultSet rs) throws SQLException {
         ArrayList<String> res = new ArrayList<>();
