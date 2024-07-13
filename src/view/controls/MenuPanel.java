@@ -20,12 +20,14 @@ public class MenuPanel extends JPanel {
 
     JTable table;                   // ссылка на таблицу, для автозаполнения полей формы UpdateAnimal()
     ArrayList<String> types;
+    ArrayList<String> sexs;
     ArrayList<String> commands;
 
     // данные фильтров вывода
     JTextField filterDateFrom;
     JTextField filterDateTo;
     JComboBox<String> filterType;
+    JComboBox<String> filterSex;
     JComboBox<String> filterClass;
 
     // лейбл для вывода краткой инфы
@@ -46,6 +48,12 @@ public class MenuPanel extends JPanel {
     {
         this.types = types;
         fillComboBox(filterType, types);
+    }
+
+    public void setSex(ArrayList<String> sex)
+    {
+        this.sexs = sex;
+        fillComboBox(filterSex, sex);
     }
 
     public void setCommands(ArrayList<String> commands)
@@ -103,6 +111,7 @@ public class MenuPanel extends JPanel {
         JPanel tabDate = new JPanel(new MigLayout("fill"));
         JPanel tabType = new JPanel(new MigLayout("fill"));
         JPanel tabClass = new JPanel(new MigLayout("fill"));
+        JPanel tabSex = new JPanel(new MigLayout("fill"));
 
         // создаем элементы для вкладки "Все"
         JButton apply = new JButton("Применить");
@@ -138,6 +147,15 @@ public class MenuPanel extends JPanel {
         tabClass.add(filterClass, "gap 4, gaptop 10, wrap");
         tabClass.add(apply, "south");
 
+        // создаем вкладку "По полу"
+        apply = new JButton("Применить");
+        apply.addActionListener(lstApplySex);
+        boxModel = new JComboBoxModel();
+        filterSex = new JComboBox<>(boxModel);
+        boxModel.add(new ArrayList<>());
+        tabSex.add(filterSex, "gap 4, gaptop 10, wrap");
+        tabSex.add(apply, "south");
+
 
         // собираем панель вкладок
         JTabbedPane pane = new JTabbedPane();
@@ -145,6 +163,7 @@ public class MenuPanel extends JPanel {
         pane.addTab("Дата", tabDate);
         pane.addTab("Вид", tabType);
         pane.addTab("Класс", tabClass);
+        pane.addTab("Пол", tabSex);
         return pane;
     }
 
@@ -197,6 +216,19 @@ public class MenuPanel extends JPanel {
         }
     };
 
+    /*
+     * слушатель кнопки "Применить" для фильтра "По полу"
+     */
+    ActionListener lstApplySex = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            String s = (String) filterSex.getSelectedItem();
+            if (s != null && !s.isBlank())
+                fireFilterSex(new FilterSexEvent(e.getSource(), s));
+        }
+    };
+
 
     /*
      * слушатель кнопки "Добавить"
@@ -205,7 +237,7 @@ public class MenuPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            InputDialog dlg = new InputDialog(commands, types);
+            InputDialog dlg = new InputDialog(commands, types, sexs);
             if (JOptionPane.showConfirmDialog(null, dlg, "Добавление животного",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION)
@@ -238,9 +270,9 @@ public class MenuPanel extends JPanel {
                 {
                     InputDialog dlg = new InputDialog(animal.getNickName(),
                             animal.getClass().getSimpleName(),
-                            animal.getBirthDay(),
+                            animal.getBirthDay(), animal.getSex().name(),
                             animal.getCommands().getCommands(),
-                            commands, types);
+                            commands, types, sexs);
                     if (JOptionPane.showConfirmDialog(null, dlg, "Изменить данные",
                             JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
@@ -304,6 +336,13 @@ public class MenuPanel extends JPanel {
     private void fireFilterClass(FilterClassEvent event)
     {
         FilterClassListener[] listeners = listenerList.getListeners(FilterClassListener.class);
+        for (int i = listeners.length-1; i>=0; i--)
+            (listeners[i]).actionPerformed(event);
+    }
+
+    private void fireFilterSex(FilterSexEvent event)
+    {
+        FilterSexListener[] listeners = listenerList.getListeners(FilterSexListener.class);
         for (int i = listeners.length-1; i>=0; i--)
             (listeners[i]).actionPerformed(event);
     }

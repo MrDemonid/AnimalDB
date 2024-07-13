@@ -17,6 +17,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
 
     CommandsDB commandsDB;
     TypesDB typesDB;
+    SexDB sexDB;
     AnimalDB db;
 
     public DatabaseModel(Connection con)
@@ -24,6 +25,7 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
         this.con = con;
         commandsDB = new CommandsDB(con);
         typesDB = new TypesDB(con);
+        sexDB = new SexDB(con);
         db = new AnimalDB(con);
     }
 
@@ -77,8 +79,15 @@ public class DatabaseModel implements IDataBase, IDbCloseable {
     }
 
     @Override
-    public ArrayList<String> getTypesList() {
+    public ArrayList<String> getTypesList()
+    {
         return typesDB.getTypesList();
+    }
+
+    @Override
+    public ArrayList<String> getSexList()
+    {
+        return sexDB.getSexList();
     }
 
     /**

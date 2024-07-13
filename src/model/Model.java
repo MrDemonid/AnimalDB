@@ -2,6 +2,7 @@ package model;
 
 import animal.base.Animal;
 import animal.base.AnimalClass;
+import animal.base.AnimalSex;
 import model.dao.DatabaseModel;
 
 import java.lang.reflect.InvocationTargetException;
@@ -88,6 +89,12 @@ public class Model implements IModel {
     }
 
     @Override
+    public ArrayList<Animal> getBySex(AnimalSex sex)
+    {
+        return db.getBySex(sex);
+    }
+
+    @Override
     public ArrayList<String> getCommandsList()
     {
         return db.getCommandsList();
@@ -97,6 +104,11 @@ public class Model implements IModel {
     public ArrayList<String> getTypesList()
     {
         return db.getTypesList();
+    }
+    @Override
+    public ArrayList<String> getSexList()
+    {
+        return db.getSexList();
     }
 
     @Override

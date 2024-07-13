@@ -18,6 +18,7 @@ public interface IDataBase {
 
     ArrayList<String> getCommandsList();
     ArrayList<String> getTypesList();
+    ArrayList<String> getSexList();
 
     void updateAnimal(Animal animal);
     void addAnimal(Animal animal);

@@ -1,5 +1,4 @@
-SELECT denotation FROM cmd_info
-JOIN cmd_list ON cmd_list.cmd_id = cmd_info.id
-JOIN animals ON animals.id = cmd_list.anm_id
-WHERE animals.id = 1
-;
+SELECT c.denotation AS 'Commands'
+FROM commands c
+JOIN cmd_list cl ON cl.cmd_id = c.id
+WHERE cl.anm_id = 1;

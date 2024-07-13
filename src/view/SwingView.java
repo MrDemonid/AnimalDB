@@ -59,6 +59,12 @@ public class SwingView extends View {
     }
 
     @Override
+    public void setSexList(ArrayList<String> sexList)
+    {
+        menuPanel.setSex(sexList);
+    }
+
+    @Override
     public void setClassList(ArrayList<String> classList)
     {
         menuPanel.setClasses(classList);

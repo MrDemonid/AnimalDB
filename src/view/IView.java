@@ -13,9 +13,10 @@ public interface IView {
 
     void setCommandList(ArrayList<String> commands);    // список команд животных
     void setTypeList(ArrayList<String> typeList);       // список видов животных
+    void setSexList(ArrayList<String> sexList);         // список пола животных
     void setClassList(ArrayList<String> classList);     // список видов животных
     void setTableData(ArrayList<Animal> animals);       // список данных о животных
-    void setInfo(String text);                          // какая то информация для юзера
+    void setInfo(String text);                          // какая-то информация для юзера
 
     void update();                                      // обновить UI
 

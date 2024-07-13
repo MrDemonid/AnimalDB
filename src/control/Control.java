@@ -3,6 +3,7 @@ package control;
 import animal.AnimalFactory;
 import animal.base.Animal;
 import animal.base.AnimalClass;
+import animal.base.AnimalSex;
 import control.filters.*;
 import model.Model;
 import view.View;
@@ -46,11 +47,13 @@ public class Control {
         setListeners();             // Регистрируем обработчики событий
         ArrayList<String> cmd = model.getCommandsList();
         ArrayList<String> type = model.getTypesList();
-        ArrayList<String> classes = new ArrayList<>(Arrays.asList(AnimalClass.Pets.toString(), AnimalClass.Packs.toString()));
+        ArrayList<String> sex = model.getSexList();
+        ArrayList<String> classes = new ArrayList<>(Arrays.asList(AnimalClass.Pets.name(), AnimalClass.Packs.name()));
         SwingUtilities.invokeLater(() -> {
-                    view.setCommandList(cmd);
-                    view.setTypeList(type);
-                    view.setClassList(classes);
+            view.setCommandList(cmd);
+            view.setTypeList(type);
+            view.setSexList(sex);
+            view.setClassList(classes);
         });
         viewSetTable();
     }
@@ -74,6 +77,7 @@ public class Control {
             view.addListener(FilterDateListener.class, doFilterDate);
             view.addListener(FilterTypeListener.class, doFilterType);
             view.addListener(FilterClassListener.class, doFilterClass);
+            view.addListener(FilterSexListener.class, doFilterSex);
             view.addListener(NewAnimalListener.class, doNewAnimal);
             view.addListener(UpdateAnimalListener.class, doUpdateAnimal);
         });
@@ -87,6 +91,7 @@ public class Control {
         view.removeListeners(FilterDateListener.class, doFilterDate);
         view.removeListeners(FilterTypeListener.class, doFilterType);
         view.removeListeners(FilterClassListener.class, doFilterClass);
+        view.removeListeners(FilterSexListener.class, doFilterSex);
         view.removeListeners(NewAnimalListener.class, doNewAnimal);
         view.removeListeners(UpdateAnimalListener.class, doUpdateAnimal);
     }
@@ -129,6 +134,19 @@ public class Control {
             if (cl != null)
             {
                 filter = filterFactory.getFilter(cl);
+                viewSetTable();
+            }
+        }
+    };
+
+    private final FilterSexListener doFilterSex = new FilterSexListener() {
+        @Override
+        public void actionPerformed(FilterSexEvent event)
+        {
+            AnimalSex sex = AnimalSex.getSex(event.getSex());
+            if (sex != null)
+            {
+                filter = filterFactory.getFilter(sex);
                 viewSetTable();
             }
         }

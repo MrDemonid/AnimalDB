@@ -5,6 +5,6 @@ JOIN typ_list tl ON tl.anm_id = a.id
 JOIN sex_list sl ON sl.anm_id = a.id
 JOIN types t ON tl.typ_id = t.id
 JOIN sex s ON sl.sex_id = s.id
--- WHERE tl.typ_id = 1
-WHERE t.denotation = 'Dog'
+-- WHERE sl.sex_id = 1
+WHERE s.denotation = 'female'
 ORDER BY a.id;

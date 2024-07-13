@@ -1,6 +1,7 @@
 package control.filters;
 
 import animal.base.AnimalClass;
+import animal.base.AnimalSex;
 import model.Model;
 
 import java.util.Date;
@@ -16,7 +17,7 @@ public class FilterFactory {
 
     public FilterFactory(Model model)
     {
-        filters = new FilterBase[] {new NothingFilter(model), new BirthdayFilter(model), new TypeFilter(model), new ClassFilter(model)};
+        filters = new FilterBase[] {new NothingFilter(model), new BirthdayFilter(model), new TypeFilter(model), new ClassFilter(model), new SexFilter(model)};
     }
 
     public FilterBase getFilter()
@@ -40,5 +41,11 @@ public class FilterFactory {
     {
         ((ClassFilter) filters[3]).setClass(cl);
         return filters[3];
+    }
+
+    public FilterBase getFilter(AnimalSex sex)
+    {
+        ((SexFilter) filters[4]).setSex(sex);
+        return filters[4];
     }
 }

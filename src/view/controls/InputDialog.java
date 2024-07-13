@@ -6,6 +6,8 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -16,6 +18,7 @@ public class InputDialog extends JPanel {
     private JTextField fieldName;
     private JTextField fieldDate;
     private JList<String> listTypes;
+    private JList<String> listSex;
     private JList<String> listCommands;
 
 
@@ -24,16 +27,16 @@ public class InputDialog extends JPanel {
         return AnimalSex.Unknown;
     }
 
-    public InputDialog(ArrayList<String> commands, ArrayList<String> types)
+    public InputDialog(ArrayList<String> commands, ArrayList<String> types, ArrayList<String> sex)
     {
         setLayout(new MigLayout());
-        makeDialog(commands, types);
+        makeDialog(commands, types, sex);
     }
 
-    public InputDialog(String nick, String type, Date birthDay, ArrayList<String> selected, ArrayList<String> commands, ArrayList<String> types)
+    public InputDialog(String nick, String type, Date birthDay, String sex, ArrayList<String> selected, ArrayList<String> commands, ArrayList<String> types, ArrayList<String> sexs)
     {
-        this(commands, types);
-        setDatas(nick, type, birthDay, selected);
+        this(commands, types, sexs);
+        setDatas(nick, type, birthDay, selected, sex);
     }
 
     public String getFieldName()
@@ -60,7 +63,7 @@ public class InputDialog extends JPanel {
         return listTypes.getSelectedValue();
     }
 
-    private void setDatas(String nick, String type, Date birthDay, ArrayList<String> commands)
+    private void setDatas(String nick, String type, Date birthDay, ArrayList<String> commands, String sex)
     {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -84,23 +87,34 @@ public class InputDialog extends JPanel {
             int index = modelCmd.indexOf(type);
             listTypes.setSelectedIndex(index);
             listTypes.setEnabled(false);
+
+            // выделяем поле пола
+            modelCmd = (DefaultListModel<String>) listSex.getModel();
+            index = modelCmd.indexOf(sex);
+            listSex.setSelectedIndex(index);
+            listSex.setEnabled(false);
+
         } catch (Exception ignored) {}
     }
 
 
-    private void makeDialog(ArrayList<String> commands, ArrayList<String> types)
+    private void makeDialog(ArrayList<String> commands, ArrayList<String> types, ArrayList<String> sex)
     {
-        fieldName = new JTextField(15);
-        fieldDate = new JTextField(15);
+        fieldName = new JTextField(16);
+        fieldDate = new JTextField(16);
         add(new JLabel("Имя:"), "gap, sg 1");
-        add(fieldName, "wrap");
+        add(fieldName, "span 3, wrap");
         add(new JLabel("Дата рождения:"), "gap, sg 1");
-        add(fieldDate, "wrap");
+        add(fieldDate, "span 3, wrap");
         add(new JSeparator(), "growx, spanx, gaptop 10, gapbottom 5, wrap");
-        add(new JLabel("Вид"), "gap, sg 1");
+        add(new JLabel("Вид"), "gap");
+        add(new JLabel("Пол"), "gap");
+        add(new JLabel("     "), "gap");
         add(new JLabel("Команды"), "gap, wrap");
         listTypes = addList(types, ListSelectionModel.SINGLE_SELECTION, "gap");
-        listCommands = addList(commands, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, "span, grow, wrap");
+        listSex = addList(sex, ListSelectionModel.SINGLE_SELECTION, "gap");
+        listCommands = addList(commands, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, "skip 1, grow, wrap");
+
     }
 
     private JList<String> addList(ArrayList<String> list, int selection, String align)
